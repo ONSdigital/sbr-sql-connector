@@ -35,3 +35,6 @@ libraryDependencies ++= Seq(
   "ch.qos.logback"  %  "logback-classic"    % Versions.qos
 )
 
+// Stop tests running in parallel because the DB schema gets messed up
+parallelExecution in Test := false
+
