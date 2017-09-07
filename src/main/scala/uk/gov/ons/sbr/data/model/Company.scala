@@ -60,7 +60,7 @@ case class Company(
                     previousname_10_companyname: Option[String] = None,
                     confstmtnextduedate: Option[String] = None,
                     confstmtlastmadeupdate: Option[String] = None,
-                    leu_id: Long
+                    ubrn: Long
                   )
 {
   // Allows you to save current instance directly
@@ -136,7 +136,7 @@ object Company extends SQLSyntaxSupport[Company] {
     rs.stringOpt("previousname_10_companyname"),
     rs.stringOpt("confstmtnextduedate"),
     rs.stringOpt("confstmtlastmadeupdate"),
-    rs.long("leu_id")
+    rs.long("ubrn")
   )
 
 
@@ -203,7 +203,7 @@ object Company extends SQLSyntaxSupport[Company] {
         column.previousname_10_companyname -> ch.previousname_10_companyname,
         column.confstmtnextduedate -> ch.confstmtnextduedate,
         column.confstmtlastmadeupdate -> ch.confstmtlastmadeupdate,
-        column.leu_id -> ch.leu_id
+        column.ubrn -> ch.ubrn
       )
     }.update.apply()
     ch
@@ -266,7 +266,7 @@ object Company extends SQLSyntaxSupport[Company] {
         column.previousname_10_companyname -> ch.previousname_10_companyname,
         column.confstmtnextduedate -> ch.confstmtnextduedate,
         column.confstmtlastmadeupdate -> ch.confstmtlastmadeupdate,
-        column.leu_id -> ch.leu_id
+        column.ubrn -> ch.ubrn
       ).where
         .eq(column.ref_period, ch.ref_period).and.eq(column.companynumber, ch.companynumber)
     }.update.apply()
@@ -282,7 +282,7 @@ object Company extends SQLSyntaxSupport[Company] {
   def findByLegalUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): List[Company] = withSQL {
     select.from(Company as ch)
       .where.eq(ch.ref_period, ref_period)
-      .and.eq(ch.leu_id, ubrn)
+      .and.eq(ch.ubrn, ubrn)
   }.map(Company(ch)).list.apply()
 
   def destroy(ref_period: Long, companynumber: String)(implicit session: DBSession = autoSession): Unit = withSQL {

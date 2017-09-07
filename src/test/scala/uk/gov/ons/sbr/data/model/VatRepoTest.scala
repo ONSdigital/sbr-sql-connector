@@ -72,7 +72,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // Now create VAT for this LEU
     val ref = "VAT0001"
-    val vat: Vat = Vat(ref_period = refperiod, vatref = ref, leu_id = ubrn)
+    val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
     val newRec = vatRepo.insert(vat)
 
     // Now see if we can query it back
@@ -98,7 +98,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // Now create VAT for this LEU
     val ref = "VAT0001"
-    val vat: Vat = Vat(ref_period = refperiod, vatref = ref, leu_id = ubrn)
+    val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
     val newRec = vatRepo.insert(vat)
 
 
@@ -131,7 +131,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     val ids = (1 to numUnits)
     ids foreach { id =>
       val ref = s"VAT$id"
-      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, leu_id = ubrn)
+      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
       val newRec = vatRepo.insert(vat)
     }
 
@@ -161,7 +161,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     val ids = (1 to numUnits)
     ids foreach { id =>
       val ref = s"VAT$id"
-      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), leu_id = ubrn)
+      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn)
       val newRec = vatRepo.insert(vat)
     }
 
@@ -203,7 +203,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     val ids = (1 to numUnits)
     ids foreach { id =>
       val ref = s"VAT$id"
-      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), leu_id = ubrn1)
+      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn1)
       val newRec = vatRepo.insert(vat)
     }
 
@@ -217,7 +217,7 @@ class VatRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     val end = numUnits + numUnits
     (start to end) foreach { id =>
       val ref = s"VAT$id"
-      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), leu_id = ubrn2)
+      val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn2)
       val newRec = vatRepo.insert(vat)
     }
 

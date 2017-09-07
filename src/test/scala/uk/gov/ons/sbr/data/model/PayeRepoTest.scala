@@ -69,7 +69,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
 
     // Now create PAYE for this LEU
     val pref = "PAYE0001"
-    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, leu_id = ubrn)
+    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
     val newPaye = payeRepo.insert(paye)
 
     // Now see if we can query it back
@@ -96,7 +96,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
 
     // Now create PAYE for this LEU
     val pref = "PAYE0001"
-    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, leu_id = ubrn)
+    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
     val newPaye = payeRepo.insert(paye)
 
 
@@ -129,7 +129,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
     val ids = (1 to numUnits)
     ids foreach { id =>
       val pref = s"PAYE$id"
-      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, leu_id = ubrn)
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
       val newPaye = payeRepo.insert(paye)
     }
 
@@ -158,7 +158,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
     val ids = (1 to numUnits)
     ids foreach { id =>
       val pref = s"PAYE$id"
-      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, name1 = Some(s"PAYE-NAME-$pref"),leu_id = ubrn)
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, name1 = Some(s"PAYE-NAME-$pref"),ubrn = ubrn)
       val newPaye = payeRepo.insert(paye)
     }
 
@@ -201,7 +201,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
     val ids = (1 to numUnits)
     ids foreach { id =>
       val pref = s"PAYE$id"
-      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, leu_id = ubrn1)
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn1)
       val newPaye = payeRepo.insert(paye)
     }
 
@@ -215,7 +215,7 @@ class PayeRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEa
     val end = numUnits + numUnits
     (start to end) foreach { id =>
       val pref = s"PAYE$id"
-      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, leu_id = ubrn2)
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn2)
       val newPaye = payeRepo.insert(paye)
     }
 

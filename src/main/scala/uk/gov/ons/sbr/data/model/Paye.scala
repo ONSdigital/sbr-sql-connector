@@ -42,7 +42,7 @@ case class Paye(
                  address5: Option[String] = None,
                  postcode: Option[String] = None,
                  mkr: Option[String] = None,
-                 leu_id: Long) {
+                 ubrn: Long) {
   // Allows you to save current instance directly
   def save()(implicit session: DBSession = Paye.autoSession): Paye = Paye.save(this)(session)
 
@@ -97,7 +97,7 @@ object Paye extends SQLSyntaxSupport[Paye] {
     rs.stringOpt("address5"),
     rs.stringOpt("postcode"),
     rs.stringOpt("mkr"),
-    rs.long("leu_id")
+    rs.long("ubrn")
   )
 
   // Seems to make it easier to use SQL DSL below
@@ -146,7 +146,7 @@ object Paye extends SQLSyntaxSupport[Paye] {
         column.address5 -> paye.address5,
         column.postcode -> paye.postcode,
         column.mkr -> paye.mkr,
-        column.leu_id -> paye.leu_id
+        column.ubrn -> paye.ubrn
       )
     }.update.apply()
     paye
@@ -192,7 +192,7 @@ object Paye extends SQLSyntaxSupport[Paye] {
         column.address5 -> paye.address5,
         column.postcode -> paye.postcode,
         column.mkr -> paye.mkr,
-        column.leu_id -> paye.leu_id
+        column.ubrn -> paye.ubrn
       ).where
         .eq(column.ref_period, paye.ref_period).and.eq(column.payeref, paye.payeref)
     }.update.apply()
@@ -208,7 +208,7 @@ object Paye extends SQLSyntaxSupport[Paye] {
   def findByLegalUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): List[Paye] = withSQL {
     select.from(Paye as p)
       .where.eq(p.ref_period, ref_period)
-      .and.eq(p.leu_id, ubrn)
+      .and.eq(p.ubrn, ubrn)
   }.map(Paye(p)).list.apply()
 
   def destroy(ref_period: Long, payeref: String)(implicit session: DBSession = autoSession): Unit = withSQL {

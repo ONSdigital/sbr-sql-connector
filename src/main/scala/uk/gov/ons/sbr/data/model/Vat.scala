@@ -32,7 +32,7 @@ case class Vat(
                 address5 : Option[String] = None ,
                 postcode : Option[String] = None ,
                 mkr : Option[String] = None ,
-                leu_id : Long)
+                ubrn : Long)
 {
   // Allows you to save current instance directly
   def save()(implicit session: DBSession = Vat.autoSession): Vat = Vat.save(this)(session)
@@ -78,7 +78,7 @@ object Vat extends SQLSyntaxSupport[Vat] {
     rs.stringOpt("address5"),
     rs.stringOpt("postcode"),
     rs.stringOpt("mkr"),
-    rs.long("leu_id")
+    rs.long("ubrn")
   )
 
   // Seems to make it easier to use SQL DSL below
@@ -119,7 +119,7 @@ object Vat extends SQLSyntaxSupport[Vat] {
         column.address5 -> vat.address5,
         column.postcode -> vat.postcode,
         column.mkr -> vat.mkr,
-        column.leu_id -> vat.leu_id
+        column.ubrn -> vat.ubrn
       )
     }.update.apply()
     vat
@@ -156,7 +156,7 @@ object Vat extends SQLSyntaxSupport[Vat] {
         column.address5 -> vat.address5,
         column.postcode -> vat.postcode,
         column.mkr -> vat.mkr,
-        column.leu_id -> vat.leu_id
+        column.ubrn -> vat.ubrn
       ).where
         .eq(column.ref_period, vat.ref_period).and.eq(column.vatref, vat.vatref)
     }.update.apply()
@@ -172,7 +172,7 @@ object Vat extends SQLSyntaxSupport[Vat] {
   def findByLegalUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): List[Vat] = withSQL {
     select.from(Vat as v)
       .where.eq(v.ref_period, ref_period)
-      .and.eq(v.leu_id, ubrn)
+      .and.eq(v.ubrn, ubrn)
   }.map(Vat(v)).list.apply()
 
   def destroy(ref_period: Long, vatref: String)(implicit session: DBSession = autoSession): Unit = withSQL {

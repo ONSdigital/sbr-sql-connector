@@ -65,7 +65,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
     // Now create Company for this LEU
     val coNo = "COMPANY0001"
-    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn)
+    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
     val newCo = chRepo.insert(co)
 
     // Now see if we can query it back
@@ -91,7 +91,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
     // Now create Company for this LEU
     val coNo = "COMPANY0001"
-    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn)
+    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
     val newCo = chRepo.insert(co)
 
     // delete new Company
@@ -123,7 +123,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val ids = (1 to numUnits)
     ids foreach { id =>
       val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn)
+      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
       chRepo.insert(data)
     }
 
@@ -152,7 +152,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val ids = (1 to numUnits)
     ids foreach { id =>
       val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn)
+      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
       chRepo.insert(data)
     }
 
@@ -194,7 +194,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val ids = (1 to numUnits)
     ids foreach { id =>
       val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn1)
+      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn1)
       chRepo.insert(data)
     }
 
@@ -208,7 +208,7 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val end = numUnits + numUnits
     (start to end) foreach { id =>
       val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), leu_id = ubrn2)
+      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn2)
       chRepo.insert(data)
     }
 

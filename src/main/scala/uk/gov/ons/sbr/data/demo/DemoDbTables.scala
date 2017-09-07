@@ -40,20 +40,20 @@ object EnterpriseDbTable extends DemoDbTable{
     (
         ref_period bigint NOT NULL,
         entref bigint NOT NULL,
-        ent_tradingstyle VARCHAR(1000) ,
-        ent_address1 VARCHAR(1000)  ,
-        ent_address2 VARCHAR(1000)  ,
-        ent_address3 VARCHAR(1000)  ,
-        ent_address4 VARCHAR(1000)  ,
-        ent_address5 VARCHAR(1000)  ,
-        ent_postcode VARCHAR(1000)  ,
-        legalstatus VARCHAR(1000)  ,
-        paye_jobs VARCHAR(1000)  ,
-        employees VARCHAR(1000)  ,
-        standard_vat_turnover VARCHAR(1000)  ,
+        ent_tradingstyle TEXT,
+        ent_address1 TEXT,
+        ent_address2 TEXT,
+        ent_address3 TEXT,
+        ent_address4 TEXT,
+        ent_address5 TEXT,
+        ent_postcode TEXT,
+        legalstatus TEXT,
+        paye_jobs TEXT,
+        employees TEXT,
+        standard_vat_turnover TEXT,
         num_unique_payerefs bigint,
         num_unique_vatrefs bigint,
-        contained_rep_vat_turnover VARCHAR(1000),
+        contained_rep_vat_turnover TEXT,
         CONSTRAINT ent_2500_pkey PRIMARY KEY (ref_period, entref)
     )
     """.execute.apply()
@@ -156,9 +156,9 @@ object CompanyDbTable extends DemoDbTable{
     previousname_10_companyname TEXT ,
     confstmtnextduedate TEXT ,
     confstmtlastmadeupdate TEXT ,
-    leu_id bigint,
+    ubrn bigint,
     CONSTRAINT ch_2500_pkey PRIMARY KEY (ref_period, companynumber),
-    CONSTRAINT ch_leu_fk FOREIGN KEY (ref_period, leu_id)
+    CONSTRAINT ch_leu_fk FOREIGN KEY (ref_period, ubrn)
     REFERENCES leu_2500 (ref_period, ubrn)
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
@@ -202,9 +202,9 @@ object VatDbTable extends DemoDbTable{
         address5 TEXT ,
         postcode TEXT ,
         mkr TEXT ,
-        leu_id bigint,
+        ubrn bigint,
         CONSTRAINT vat_2500_pkey PRIMARY KEY (ref_period, vatref),
-        CONSTRAINT vat_leu_fk FOREIGN KEY (ref_period, leu_id)
+        CONSTRAINT vat_leu_fk FOREIGN KEY (ref_period, ubrn)
             REFERENCES leu_2500 (ref_period, ubrn)
             ON UPDATE NO ACTION
             ON DELETE NO ACTION
@@ -259,9 +259,9 @@ object PayeDbTable extends DemoDbTable{
     address5 TEXT ,
     postcode TEXT ,
     mkr TEXT ,
-    leu_id bigint,
+    ubrn bigint,
     CONSTRAINT paye_2500_pkey PRIMARY KEY (ref_period, payeref),
-    CONSTRAINT paye_leu_fk FOREIGN KEY (ref_period, leu_id)
+    CONSTRAINT paye_leu_fk FOREIGN KEY (ref_period, ubrn)
         REFERENCES leu_2500 (ref_period, ubrn)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
