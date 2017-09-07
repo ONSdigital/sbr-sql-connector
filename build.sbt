@@ -1,4 +1,4 @@
-name := """db-dummy"""
+name := """sbr-sql-connector"""
 
 version := "1.0"
 
