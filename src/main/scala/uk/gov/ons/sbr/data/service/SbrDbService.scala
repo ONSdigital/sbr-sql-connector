@@ -13,12 +13,14 @@ class SbrDbService(dbConfig: Config) {
   val initSchema: Boolean= dbConfig.getBoolean("init")
   val loadSample: Boolean= dbConfig.getBoolean("load")
 
+  val dbSchema =  new DbSchema(dbConfig)
+
   // Get implicit session for voodoo with DB operations below
   implicit val session = db.session
 
   // create tables?
-  if (initSchema) DbSchema.createSchema
+  if (initSchema) dbSchema.createSchema
 
-  if (loadSample) DbSchema.loadDataIntoSchema
+  if (loadSample) dbSchema.loadDataIntoSchema
 
 }

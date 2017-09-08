@@ -3,55 +3,68 @@ package uk.gov.ons.sbr.data.db
 import scalikejdbc._
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
-object DbSchema {
+import javax.inject.Singleton
+
+import com.typesafe.config.{Config}
+
+@Singleton
+class DbSchema(dbConfig: Config) {
+
+  private val unitLinksTable = new UnitLinksDbTable(dbConfig)
+  private val vatTable = new VatDbTable(dbConfig)
+  private val payeTable = new PayeDbTable(dbConfig)
+  private val companyTable = new CompanyDbTable(dbConfig)
+  private val legalUnitTable = new LegalUnitDbTable(dbConfig)
+  private val enterpriseTable = new EnterpriseDbTable(dbConfig)
+
 
   def dropSchema(implicit session: DBSession = autoSession) = {
 
-    UnitLinksDbTable.dropTable
+    unitLinksTable.dropTable
 
-    VatDbTable.dropTable
+    vatTable.dropTable
 
-    PayeDbTable.dropTable
+    payeTable.dropTable
 
-    CompanyDbTable.dropTable
+    companyTable.dropTable
 
-    LegalUnitDbTable.dropTable
+    legalUnitTable.dropTable
 
-    EnterpriseDbTable.dropTable
+    enterpriseTable.dropTable
   }
 
   def createSchema(implicit session: DBSession = autoSession) = {
 
     dropSchema
 
-    EnterpriseDbTable.createTable
+    enterpriseTable.createTable
 
-    LegalUnitDbTable.createTable
+    legalUnitTable.createTable
 
-    CompanyDbTable.createTable
+    companyTable.createTable
 
-    PayeDbTable.createTable
+    payeTable.createTable
 
-    VatDbTable.createTable
+    vatTable.createTable
 
-    UnitLinksDbTable.createTable
+    unitLinksTable.createTable
 
   }
 
 
   def loadDataIntoSchema() = {
 
-    EnterpriseDbTable.loadFromSqlFile("ent_2500_data.sql")
+    enterpriseTable.loadFromSqlFile("ent_2500_data.sql")
 
-    LegalUnitDbTable.loadFromSqlFile("leu_2500_data.sql")
+    legalUnitTable.loadFromSqlFile("leu_2500_data.sql")
 
-    CompanyDbTable.loadFromSqlFile("ch_2500_data.sql")
+    companyTable.loadFromSqlFile("ch_2500_data.sql")
 
-    PayeDbTable.loadFromSqlFile("paye_2500_data.sql")
+    payeTable.loadFromSqlFile("paye_2500_data.sql")
 
-    VatDbTable.loadFromSqlFile("vat_2500_data.sql")
+    vatTable.loadFromSqlFile("vat_2500_data.sql")
 
-    UnitLinksDbTable.loadFromSqlFile("unit_links_2500_data.sql")
+    unitLinksTable.loadFromSqlFile("unit_links_2500_data.sql")
   }
 
 }
