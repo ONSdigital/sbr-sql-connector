@@ -307,3 +307,24 @@ object UnitKeyDbTable extends DemoDbTable{
       """.execute.apply()
   }
 }
+
+
+object UnitLinksDbTable extends DemoDbTable{
+
+  def dropTable(implicit session: DBSession = autoSession) =
+    sql"""DROP TABLE IF EXISTS unit_links_2500 CASCADE""".execute.apply()
+
+  def createTable(implicit session: DBSession = autoSession) = sql"""
+  CREATE TABLE unit_links_2500
+   (
+       ref_period bigint NOT NULL,
+       unit_type character varying(10) NOT NULL,
+       unit_id character varying(100) NOT NULL,
+       p_ent BIGINT,
+       p_leu BIGINT,
+       children TEXT,
+       CONSTRAINT unit_links_2500_pkey PRIMARY KEY (ref_period, unit_type, unit_id)
+   )
+    """.execute.apply()
+
+}

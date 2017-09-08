@@ -12,6 +12,8 @@ object DbSchemaService {
 
   def dropSchema(implicit session: DBSession = autoSession) = {
 
+    UnitLinksDbTable.dropTable
+
     UnitKeyDbTable.dropTable
 
     VatDbTable.dropTable
@@ -43,6 +45,8 @@ object DbSchemaService {
 
     UnitKeyDbTable.createTable
 
+    UnitLinksDbTable.createTable
+
   }
 
 
@@ -57,6 +61,8 @@ object DbSchemaService {
     PayeDbTable.loadFromSqlFile("paye_2500_data.sql")
 
     VatDbTable.loadFromSqlFile("vat_2500_data.sql")
+
+    UnitLinksDbTable.loadFromSqlFile("unit_links_2500_data.sql")
 
     // Popualte Unit Keys from the above tables
     UnitKeyDbTable.populate()

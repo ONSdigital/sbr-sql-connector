@@ -39,5 +39,7 @@ object DevDummyApp extends App {
   count = UnitKeyRepo.count()
   println(s"Unit keys: $count")
 
+  count = UnitLinksRepo.count()
+  println(s"Unit links: $count")
 
 }
