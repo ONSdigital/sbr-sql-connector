@@ -4,41 +4,8 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
-class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
-
-  // Set up DB...
-  val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db").getConfig("test")
-  val db = new SbrDatabase(dbConfig)
-
-  // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
-
-  // Use same Repo object for all tests
-  val entRepo = EnterpriseDao
-  val unitRepo = LegalUnitDao
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    // create DB schema (once only)
-    DbSchema.createSchema
-  }
-
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    // drop DB schema
-    DbSchema.dropSchema
-  }
-
-
-  // delete all data between tests
-  override def beforeEach(): Unit = {
-    unitRepo.deleteAll
-
-    entRepo.deleteAll
-  }
-
+class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
+  
   /** * TESTS START HERE ***/
 
   behavior of "LegalUnitRepo"
@@ -50,15 +17,15 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // Now see if we can query it back
-    val fetched = unitRepo.getLegalUnit(refperiod, ubrn)
+    val fetched = unitDao.getLegalUnit(refperiod, ubrn)
 
     fetched shouldBe (Some(newLeu))
   }
@@ -70,19 +37,19 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
 
     // assume insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // delete new Legal Unit record
     newLeu.destroy()
 
     // see if Legal Unit still exists (query works - tested elsewhere)
-    val fetched = unitRepo.getLegalUnit(refperiod, ubrn)
+    val fetched = unitDao.getLegalUnit(refperiod, ubrn)
 
     fetched shouldBe (None)
 
@@ -95,7 +62,7 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
 
     // assume Enterprise insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
     // create several Legal Units
 
@@ -103,7 +70,7 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
     val ids = (1 to numUnits)
     ids foreach { id =>
       val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = id, entref = entref, businessname = Option(s"Legal Unit $id"))
-      unitRepo.insert(leu)
+      unitDao.insert(leu)
     }
 
     // query a random record back for an ID between 1 and numEnts (watch out for 0 coming back from random gen)
@@ -114,7 +81,7 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     // fetch the data
-    val fetched = unitRepo.getLegalUnit(refperiod, qid)
+    val fetched = unitDao.getLegalUnit(refperiod, qid)
 
     val expectedName = Some(s"Legal Unit $qid")
     // Remember name is an option as well
@@ -130,18 +97,18 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
 
     // assume Enterprise insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
     // create several Legal Units
     val numUnits = 10
     val ids = (1 to numUnits)
     ids foreach { id =>
       val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = id, entref = entref, businessname = Option(s"Legal Unit $id"))
-      unitRepo.insert(leu)
+      unitDao.insert(leu)
     }
 
     // fetch the legal units for this enterprise
-    val fetched = unitRepo.getLegalUnitsForEnterprise(refperiod, entref)
+    val fetched = unitDao.getLegalUnitsForEnterprise(refperiod, entref)
 
     // Check we got the right number of records
     fetched.size shouldBe numUnits
@@ -155,30 +122,30 @@ class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
 
     // assume Enterprise insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
     // create several Legal Units for this enterprise
     (1 to numUnits) foreach { id =>
       val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = id, entref = entref, businessname = Option(s"Legal Unit $id"))
-      unitRepo.insert(leu)
+      unitDao.insert(leu)
     }
 
     // now add another Ent and same number of Legal Units
     val entref2 = entref + 1
     val ent2 = Enterprise(ref_period = refperiod, entref = entref2, ent_tradingstyle = Option(s"Entity $entref2"))
-    entRepo.insert(ent2)
+    entDao.insert(ent2)
 
     // create several Legal Units for this enterprise (UBRNs must be unique)
     val start = numUnits + 1
     val end = numUnits + numUnits
     (start to end) foreach { id =>
       val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = id, entref = entref, businessname = Option(s"Legal Unit $id"))
-      unitRepo.insert(leu)
+      unitDao.insert(leu)
     }
 
     // count ALL legal units
     val expected = numUnits + numUnits
-    val counted = unitRepo.count()
+    val counted = unitDao.count()
 
     counted shouldBe expected
 

@@ -4,50 +4,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
-class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
-
-  // Set up DB...
-  val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db").getConfig("test")
-  val db = new SbrDatabase(dbConfig)
-
-  // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
-
-  // Use same entity Repo object for all tests
-  val entRepo = EnterpriseDao
-  val unitRepo = LegalUnitDao
-  val chRepo = CompanyDao
-  val payeRepo = PayeDao
-  val vatRepo = VatDao
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-
-    // create DB schema
-    DbSchema.createSchema
-  }
-
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    // drop DB schema
-    DbSchema.dropSchema
-  }
-
-
-  // delete all data between tests
-  override def beforeEach(): Unit = {
-    vatRepo.deleteAll
-
-    payeRepo.deleteAll
-
-    chRepo.deleteAll
-
-    unitRepo.deleteAll
-
-    entRepo.deleteAll
-  }
+class VatDaoTest extends FlatSpec with DaoTest  with Matchers {
 
 
   /** * TESTS START HERE ***/
@@ -62,20 +19,20 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // Now create VAT for this LEU
     val ref = "VAT0001"
     val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
-    val newRec = vatRepo.insert(vat)
+    val newRec = vatDao.insert(vat)
 
     // Now see if we can query it back
-    val fetched = vatRepo.getVat(refperiod, ref)
+    val fetched = vatDao.getVat(refperiod, ref)
 
     fetched shouldBe (Some(newRec))
 
@@ -88,24 +45,24 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // Now create VAT for this LEU
     val ref = "VAT0001"
     val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
-    val newRec = vatRepo.insert(vat)
+    val newRec = vatDao.insert(vat)
 
 
     // delete new record
     newRec.destroy()
 
     // Now see if we can query it back  (should be gone)
-    val fetched = vatRepo.getVat(refperiod, ref)
+    val fetched = vatDao.getVat(refperiod, ref)
 
     fetched shouldBe (None)
 
@@ -118,12 +75,12 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 12345L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // create several records for this LEU
     val numUnits = 10
@@ -131,11 +88,11 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     ids foreach { id =>
       val ref = s"VAT$id"
       val vat: Vat = Vat(ref_period = refperiod, vatref = ref, ubrn = ubrn)
-      val newRec = vatRepo.insert(vat)
+      val newRec = vatDao.insert(vat)
     }
 
     // count the records for this legal unit
-    val fetched = vatRepo.getVatsForLegalUnit(refperiod, ubrn)
+    val fetched = vatDao.getVatsForLegalUnit(refperiod, ubrn)
 
     // Check we got the right number of records
     fetched.size shouldBe numUnits
@@ -148,12 +105,12 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 12345L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // create several records for this LEU
     val numUnits = 10
@@ -161,7 +118,7 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     ids foreach { id =>
       val ref = s"VAT$id"
       val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn)
-      val newRec = vatRepo.insert(vat)
+      val newRec = vatDao.insert(vat)
     }
 
     // query a random record back for an ID between 1 and num (watch out for 0 coming back from random gen)
@@ -172,7 +129,7 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     }
 
     // fetch the data
-    val fetched = vatRepo.getVat(refperiod, qid)
+    val fetched = vatDao.getVat(refperiod, qid)
 
     val expectedName = Some(s"VAT-NAME-$qid")
     // Remember name is an option as well
@@ -188,14 +145,14 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
 
     // assume Enterprise insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
     // create two  Legal Units for this enterprise (UBRNs must be unique)
 
     val ubrn1 = 10001L
     // create Legal Unit for this Enterprise
     val leu1: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn1, entref = entref, businessname = Option(s"Legal Unit $ubrn1"))
-    val newLeu1 = unitRepo.insert(leu1)
+    val newLeu1 = unitDao.insert(leu1)
 
     // create several records for this LEU
     val numUnits = 10
@@ -203,13 +160,13 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     ids foreach { id =>
       val ref = s"VAT$id"
       val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn1)
-      val newRec = vatRepo.insert(vat)
+      val newRec = vatDao.insert(vat)
     }
 
     val ubrn2 = 10002L
     // create Legal Unit for this Enterprise
     val leu2: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn2, entref = entref, businessname = Option(s"Legal Unit $ubrn2"))
-    val newLeu2 = unitRepo.insert(leu2)
+    val newLeu2 = unitDao.insert(leu2)
 
     // create several records for this LEU
     val start = numUnits + 1
@@ -217,12 +174,12 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     (start to end) foreach { id =>
       val ref = s"VAT$id"
       val vat: Vat = Vat(ref_period = refperiod, vatref = ref, name1 = Some(s"VAT-NAME-$ref"), ubrn = ubrn2)
-      val newRec = vatRepo.insert(vat)
+      val newRec = vatDao.insert(vat)
     }
 
     // count ALL records i.e. includes both LEUs
     val expected = numUnits + numUnits
-    val counted = vatRepo.count()
+    val counted = vatDao.count()
 
     counted shouldBe expected
 

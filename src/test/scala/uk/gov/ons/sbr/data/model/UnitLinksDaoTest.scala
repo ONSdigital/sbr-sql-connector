@@ -5,38 +5,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
-class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
-
-  // Set up DB...
-  val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db").getConfig("test")
-  val db = new SbrDatabase(dbConfig)
-
-  // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
-
-  // Use same entity Repo object for all tests
-  val ukRepo = UnitLinksDao
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    // create DB schema
-    DbSchema.createSchema
-  }
-
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    // drop DB schema
-    DbSchema.dropSchema
-  }
-
-
-  // delete all data between tests
-  override def beforeEach(): Unit = {
-    ukRepo.deleteAll
-  }
-
+class UnitLinksDaoTest extends FlatSpec with DaoTest with Matchers {
 
   /** * TESTS START HERE ***/
 
@@ -56,10 +25,10 @@ class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
       ut <- uts
       key = s"$id"
       rec = UnitLinks(refperiod, ut, key, None, None, None)
-    } yield ukRepo.insert(rec)
+    } yield linksDao.insert(rec)
 
 
-    val results = ids.map {id => ukRepo.findById(refperiod, id.toString).size}
+    val results = ids.map {id => linksDao.findById(refperiod, id.toString).size}
     // Should get count of 5 items for each of 10 IDs
     val expected = List.fill(10)(5)
 
@@ -82,7 +51,7 @@ class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
       ut <- uts
       key = s"$id"
       rec = UnitLinks(refperiod, ut, key, None, None, None)
-    } yield ukRepo.insert(rec)
+    } yield linksDao.insert(rec)
 
     // Pick an ID at random
     val r = scala.util.Random
@@ -92,7 +61,7 @@ class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
     }
 
     // Query the records back
-    val results = ukRepo.findById(refperiod, searchId)
+    val results = linksDao.findById(refperiod, searchId)
 
     val expected = uts.map{ut =>  UnitLinks(refperiod, ut, searchId)}
 
@@ -111,7 +80,7 @@ class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
     val ubrn = 2000L
     val children = "{}"
     val rec = UnitLinks(refperiod, ut, s"$ubrn", Option(entref), Option(ubrn), Option(children) )
-    val unitLink:UnitLinks = ukRepo.insert(rec)
+    val unitLink:UnitLinks = linksDao.insert(rec)
 
     // Now update the record
 
@@ -121,7 +90,7 @@ class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAft
     // Modify and save the record
     val updated: UnitLinks = unitLink.copy(pEnt = Some(entref2), pLeu = Some(ubrn2), children = Some(children2)).save()
 
-    val results = ukRepo.findByKey(refperiod, ut, ubrn.toString)
+    val results = linksDao.findByKey(refperiod, ut, ubrn.toString)
     val expected = Option(updated)
 
     results shouldBe  expected

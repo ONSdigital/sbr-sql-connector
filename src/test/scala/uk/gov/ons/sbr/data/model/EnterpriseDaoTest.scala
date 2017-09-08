@@ -4,37 +4,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
-class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
-
-  // Set up DB...
-  val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db").getConfig("test")
-  val db = new SbrDatabase(dbConfig)
-
-  // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
-
-  // Use same Repo object for all tests
-  val entRepo = EnterpriseDao
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    // create DB schema (once only)
-    DbSchema.createSchema
-  }
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    // drop DB schema
-    DbSchema.dropSchema
-  }
-
-  // delete all Enterprises between tests
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    entRepo.deleteAll
-  }
-
+class EnterpriseDaoTest extends FlatSpec with DaoTest with Matchers {
 
   /** * TESTS START HERE ***/
 
@@ -48,9 +18,9 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
     val refperiod = 201708 // not default period
 
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val inserted: Enterprise = entRepo.insert(ent)
+    val inserted: Enterprise = entDao.insert(ent)
 
-    val fetched = entRepo.getEnterprise(refperiod, entref)
+    val fetched = entDao.getEnterprise(refperiod, entref)
 
     fetched shouldBe (Some(inserted))
 
@@ -67,11 +37,11 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
 
     // assume insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val inserted: Enterprise = entRepo.insert(ent)
+    val inserted: Enterprise = entDao.insert(ent)
     // delete new record
     inserted.destroy()
     // see if it still exists (query works - tested elsewhere)
-    val fetched = entRepo.getEnterprise(refperiod, entref)
+    val fetched = entDao.getEnterprise(refperiod, entref)
 
     fetched shouldBe (None)
 
@@ -85,7 +55,7 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
     val ids = (1 to numEnts)
     ids foreach { id =>
       val ent = Enterprise(ref_period = rp, entref = id, ent_tradingstyle = Option(s"Entity $id"))
-      entRepo.insert(ent)
+      entDao.insert(ent)
     }
 
     // query a random record back for an ID between 1 and numEnts (watch out for 0 coming back from random gen)
@@ -96,7 +66,7 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
     }
 
     // fetch the data
-    val fetched: Option[Enterprise] = entRepo.getEnterprise(rp, qid)
+    val fetched: Option[Enterprise] = entDao.getEnterprise(rp, qid)
 
     val expectedName = Some(s"Entity $qid")
     // Remember name is an option as well
@@ -104,7 +74,7 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
 
     actualName shouldBe expectedName
 
-    entRepo.deleteAll
+    entDao.deleteAll
 
   }
 
@@ -115,13 +85,13 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
 
     // assume insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val inserted: Enterprise = entRepo.insert(ent)
+    val inserted: Enterprise = entDao.insert(ent)
     // update record
     val newName = ent.ent_tradingstyle.map(_ + " MODIFIED")
     inserted.copy(ent_tradingstyle = newName).save
 
     // see if we can fetch correct new name (query works - tested elsewhere)
-    val fetched = entRepo.getEnterprise(refperiod, entref)
+    val fetched = entDao.getEnterprise(refperiod, entref)
     val fetchedName = fetched.map(_.ent_tradingstyle).flatten
 
     fetchedName shouldBe newName
@@ -138,15 +108,15 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
     val ids = (1 to numEnts)
     ids foreach { id =>
       val ent = Enterprise(ref_period = rp, entref = id, ent_tradingstyle = Option(s"Entity $id"))
-      entRepo.insert(ent)
+      entDao.insert(ent)
     }
 
     // Now see if count returns correct number
-    val counted = entRepo.count()
+    val counted = entDao.count()
 
     counted shouldBe numEnts
 
-    entRepo.deleteAll
+    entDao.deleteAll
   }
 
   it should "delete all Enterprise records correctly" in {
@@ -157,14 +127,14 @@ class EnterpriseDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
     val ids = (1 to numEnts)
     ids foreach { id =>
       val ent = Enterprise(ref_period = rp, entref = id, ent_tradingstyle = Option(s"Entity $id"))
-      entRepo.insert(ent)
+      entDao.insert(ent)
     }
 
     // Now delete them all again
-    entRepo.deleteAll
+    entDao.deleteAll
 
     // Now see if count returns zero
-    val counted = entRepo.count()
+    val counted = entDao.count()
 
     counted shouldBe 0
   }

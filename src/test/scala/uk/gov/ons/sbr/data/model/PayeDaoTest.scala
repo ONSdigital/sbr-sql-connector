@@ -4,47 +4,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
-class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
-
-  // Set up DB...
-  val config = ConfigFactory.load()
-  val dbConfig = config.getConfig("db").getConfig("test")
-  val db = new SbrDatabase(dbConfig)
-
-  // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
-
-  // Use same entity Repo object for all tests
-  val entRepo = EnterpriseDao
-  val unitRepo = LegalUnitDao
-  val chRepo = CompanyDao
-  val payeRepo = PayeDao
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-
-    // create DB schema
-    DbSchema.createSchema
-  }
-
-
-  override def afterAll(): Unit = {
-    super.afterAll()
-    // drop DB schema
-    DbSchema.dropSchema
-  }
-
-
-  // delete all data between tests
-  override def beforeEach(): Unit = {
-    payeRepo.deleteAll
-
-    chRepo.deleteAll
-
-    unitRepo.deleteAll
-
-    entRepo.deleteAll
-  }
+class PayeDaoTest extends FlatSpec with DaoTest with Matchers {
 
 
   /** * TESTS START HERE ***/
@@ -59,20 +19,20 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // Now create PAYE for this LEU
     val pref = "PAYE0001"
     val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
-    val newPaye = payeRepo.insert(paye)
+    val newPaye = payeDao.insert(paye)
 
     // Now see if we can query it back
-    val fetched = payeRepo.getPaye(refperiod, pref)
+    val fetched = payeDao.getPaye(refperiod, pref)
 
     fetched shouldBe (Some(newPaye))
 
@@ -86,24 +46,24 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 1234L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // Now create PAYE for this LEU
     val pref = "PAYE0001"
     val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
-    val newPaye = payeRepo.insert(paye)
+    val newPaye = payeDao.insert(paye)
 
 
     // delete new PAYE
     newPaye.destroy()
 
     // Now see if we can query it back  (should be gone)
-    val fetched = payeRepo.getPaye(refperiod, pref)
+    val fetched = payeDao.getPaye(refperiod, pref)
 
     fetched shouldBe (None)
 
@@ -116,12 +76,12 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 12345L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // create several records for this LEU
     val numUnits = 10
@@ -129,11 +89,11 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     ids foreach { id =>
       val pref = s"PAYE$id"
       val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
-      val newPaye = payeRepo.insert(paye)
+      val newPaye = payeDao.insert(paye)
     }
 
     // count the records for this legal unit
-    val fetched = payeRepo.getPayesForLegalUnit(refperiod, ubrn)
+    val fetched = payeDao.getPayesForLegalUnit(refperiod, ubrn)
 
     // Check we got the right number of records
     fetched.size shouldBe numUnits
@@ -145,12 +105,12 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // create parent Enterprise first (FK)
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    entRepo.insert(ent)
+    entDao.insert(ent)
 
     // create Legal Unit for this Enterprise
     val ubrn = 12345L
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
-    val newLeu = unitRepo.insert(leu)
+    val newLeu = unitDao.insert(leu)
 
     // create several records for this LEU
     val numUnits = 10
@@ -158,7 +118,7 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     ids foreach { id =>
       val pref = s"PAYE$id"
       val paye: Paye = Paye(ref_period = refperiod, payeref = pref, name1 = Some(s"PAYE-NAME-$pref"),ubrn = ubrn)
-      val newPaye = payeRepo.insert(paye)
+      val newPaye = payeDao.insert(paye)
     }
 
     // query a random record back for an ID between 1 and num (watch out for 0 coming back from random gen)
@@ -169,7 +129,7 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     }
 
     // fetch the data
-    val fetched = payeRepo.getPaye(refperiod, qid)
+    val fetched = payeDao.getPaye(refperiod, qid)
 
     val expectedName = Some(s"PAYE-NAME-$qid")
     // Remember name is an option as well
@@ -186,14 +146,14 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
 
     // assume Enterprise insert works because we test it elsewhere
     val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
-    val newEnt: Enterprise = entRepo.insert(ent)
+    val newEnt: Enterprise = entDao.insert(ent)
 
     // create two  Legal Units for this enterprise (UBRNs must be unique)
 
     val ubrn1 = 10001L
     // create Legal Unit for this Enterprise
     val leu1: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn1, entref = entref, businessname = Option(s"Legal Unit $ubrn1"))
-    val newLeu1 = unitRepo.insert(leu1)
+    val newLeu1 = unitDao.insert(leu1)
 
     // create several records for this LEU
     val numUnits = 10
@@ -201,13 +161,13 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     ids foreach { id =>
       val pref = s"PAYE$id"
       val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn1)
-      val newPaye = payeRepo.insert(paye)
+      val newPaye = payeDao.insert(paye)
     }
 
     val ubrn2 = 10002L
     // create Legal Unit for this Enterprise
     val leu2: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn2, entref = entref, businessname = Option(s"Legal Unit $ubrn2"))
-    val newLeu2 = unitRepo.insert(leu2)
+    val newLeu2 = unitDao.insert(leu2)
 
     // create several records for this LEU
     val start = numUnits + 1
@@ -215,12 +175,12 @@ class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEac
     (start to end) foreach { id =>
       val pref = s"PAYE$id"
       val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn2)
-      val newPaye = payeRepo.insert(paye)
+      val newPaye = payeDao.insert(paye)
     }
 
     // count ALL records i.e. includes both LEUs
     val expected = numUnits + numUnits
-    val counted = payeRepo.count()
+    val counted = payeDao.count()
 
     counted shouldBe expected
 
