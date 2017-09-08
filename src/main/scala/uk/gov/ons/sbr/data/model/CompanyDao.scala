@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
-object CompanyRepo extends DataRepo[Company]{
+object CompanyDao extends SbrDao[Company]{
 
   // entity-specific queries
 

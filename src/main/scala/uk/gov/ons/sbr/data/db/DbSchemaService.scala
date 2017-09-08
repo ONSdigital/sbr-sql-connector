@@ -1,11 +1,6 @@
-package uk.gov.ons.sbr.data.utils
+package uk.gov.ons.sbr.data.db
 
-import uk.gov.ons.sbr.data.SbrDatabase
 import scalikejdbc._
-import javax.inject.Singleton
-
-import uk.gov.ons.sbr.data.demo._
-import uk.gov.ons.sbr.data.model.Enterprise
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
 object DbSchemaService {
@@ -13,8 +8,6 @@ object DbSchemaService {
   def dropSchema(implicit session: DBSession = autoSession) = {
 
     UnitLinksDbTable.dropTable
-
-    UnitKeyDbTable.dropTable
 
     VatDbTable.dropTable
 
@@ -28,9 +21,7 @@ object DbSchemaService {
   }
 
   def createSchema(implicit session: DBSession = autoSession) = {
-
-    println("Running create schema...")
-
+    
     dropSchema
 
     EnterpriseDbTable.createTable
@@ -42,8 +33,6 @@ object DbSchemaService {
     PayeDbTable.createTable
 
     VatDbTable.createTable
-
-    UnitKeyDbTable.createTable
 
     UnitLinksDbTable.createTable
 
@@ -63,9 +52,6 @@ object DbSchemaService {
     VatDbTable.loadFromSqlFile("vat_2500_data.sql")
 
     UnitLinksDbTable.loadFromSqlFile("unit_links_2500_data.sql")
-
-    // Popualte Unit Keys from the above tables
-    UnitKeyDbTable.populate()
   }
 
 }

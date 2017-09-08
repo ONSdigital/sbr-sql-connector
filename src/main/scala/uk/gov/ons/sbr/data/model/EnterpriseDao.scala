@@ -1,7 +1,7 @@
 package uk.gov.ons.sbr.data.model
 
 
-object EnterpriseRepo extends DataRepo[Enterprise]{
+object EnterpriseDao extends SbrDao[Enterprise]{
 
   def getEnterprise(ref_period: Long, entref: Long): Option[Enterprise] = Enterprise.find(ref_period, entref)
 

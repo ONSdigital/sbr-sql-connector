@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
-trait DataRepo [T] {
+trait SbrDao [T] {
 
   def insert(data: T): T
 

@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
-object UnitLinksRepo extends DataRepo[UnitLinks] {
+object UnitLinksDao extends SbrDao[UnitLinks] {
 
   def findByKey(ref_period: Long, unitType: String, unitId: String): Option[UnitLinks] = UnitLinks.findByKey(ref_period, unitType, unitId)
 

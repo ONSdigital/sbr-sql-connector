@@ -2,10 +2,9 @@ package uk.gov.ons.sbr.data.model
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
-import uk.gov.ons.sbr.data.SbrDatabase
-import uk.gov.ons.sbr.data.utils.DbSchemaService
+import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
 
-class LegalUnitRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
+class LegalUnitDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
 
   // Set up DB...
   val config = ConfigFactory.load()
@@ -16,8 +15,8 @@ class LegalUnitRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAf
   implicit val session = db.session
 
   // Use same Repo object for all tests
-  val entRepo = EnterpriseRepo
-  val unitRepo = LegalUnitRepo
+  val entRepo = EnterpriseDao
+  val unitRepo = LegalUnitDao
 
   override def beforeAll(): Unit = {
     super.beforeAll()

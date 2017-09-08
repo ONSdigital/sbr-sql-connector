@@ -1,7 +1,7 @@
 package uk.gov.ons.sbr.data.model
 
 
-object LegalUnitRepo extends DataRepo[LegalUnit]{
+object LegalUnitDao extends SbrDao[LegalUnit]{
 
   def getLegalUnit(ref_period: Long, ubrn: Long): Option[LegalUnit] = LegalUnit.find(ref_period, ubrn)
 

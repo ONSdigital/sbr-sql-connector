@@ -2,10 +2,9 @@ package uk.gov.ons.sbr.data.model
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
-import uk.gov.ons.sbr.data.SbrDatabase
-import uk.gov.ons.sbr.data.utils.DbSchemaService
+import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
 
-class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
+class PayeDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
 
   // Set up DB...
   val config = ConfigFactory.load()
@@ -15,10 +14,11 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
   // Get implicit session for voodoo with DB operations below
   implicit val session = db.session
 
-  // Use same Repo object for all tests
-  val entRepo = EnterpriseRepo
-  val unitRepo = LegalUnitRepo
-  val chRepo = CompanyRepo
+  // Use same entity Repo object for all tests
+  val entRepo = EnterpriseDao
+  val unitRepo = LegalUnitDao
+  val chRepo = CompanyDao
+  val payeRepo = PayeDao
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -37,6 +37,8 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
   // delete all data between tests
   override def beforeEach(): Unit = {
+    payeRepo.deleteAll
+
     chRepo.deleteAll
 
     unitRepo.deleteAll
@@ -47,9 +49,10 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
   /** * TESTS START HERE ***/
 
-  behavior of "CompanyRepo"
 
-  it should "insert new Enterprise, Legal Unit and Company, then query Company correctly with Ref Period" in {
+  behavior of "PayeRepo"
+
+  it should "insert new Enterprise, Legal Unit and PAYE, then query PAYE correctly with Ref Period" in {
 
     val entref = 100L
     val refperiod = 201708 // not default period
@@ -63,19 +66,20 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
     val newLeu = unitRepo.insert(leu)
 
-    // Now create Company for this LEU
-    val coNo = "COMPANY0001"
-    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
-    val newCo = chRepo.insert(co)
+    // Now create PAYE for this LEU
+    val pref = "PAYE0001"
+    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
+    val newPaye = payeRepo.insert(paye)
 
     // Now see if we can query it back
-    val fetched = chRepo.getCompany(refperiod, coNo)
+    val fetched = payeRepo.getPaye(refperiod, pref)
 
-    fetched shouldBe (Some(newCo))
+    fetched shouldBe (Some(newPaye))
 
   }
 
-  it should "insert new Ent/LEU and delete Company correctly" in {
+
+  it should "insert new Ent/LEU/PAYE then delete PAYE correctly" in {
 
     val entref = 100L
     val refperiod = 201708 // not default period
@@ -89,22 +93,23 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
     val newLeu = unitRepo.insert(leu)
 
-    // Now create Company for this LEU
-    val coNo = "COMPANY0001"
-    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
-    val newCo = chRepo.insert(co)
+    // Now create PAYE for this LEU
+    val pref = "PAYE0001"
+    val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
+    val newPaye = payeRepo.insert(paye)
 
-    // delete new Company
-    newCo.destroy()
+
+    // delete new PAYE
+    newPaye.destroy()
 
     // Now see if we can query it back  (should be gone)
-    val fetched = chRepo.getCompany(refperiod, coNo)
+    val fetched = payeRepo.getPaye(refperiod, pref)
 
     fetched shouldBe (None)
 
   }
 
-  it should "query right number of Company records for a given Legal Unit" in {
+  it should "query right number of PAYE records for a given Legal Unit" in {
 
     val entref = 101L
     val refperiod = 201708 // not default period
@@ -118,23 +123,23 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
     val newLeu = unitRepo.insert(leu)
 
-    // create several Companies for this LEU
+    // create several records for this LEU
     val numUnits = 10
     val ids = (1 to numUnits)
     ids foreach { id =>
-      val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
-      chRepo.insert(data)
+      val pref = s"PAYE$id"
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn)
+      val newPaye = payeRepo.insert(paye)
     }
 
     // count the records for this legal unit
-    val fetched = chRepo.getCompaniesForLegalUnit(refperiod, ubrn)
+    val fetched = payeRepo.getPayesForLegalUnit(refperiod, ubrn)
 
     // Check we got the right number of records
     fetched.size shouldBe numUnits
   }
 
-  it should "query specific Company correctly from several records" in {
+  it should "query specific PAYE correctly from several records" in {
     val entref = 101L
     val refperiod = 201708 // not default period
 
@@ -147,33 +152,34 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
     val newLeu = unitRepo.insert(leu)
 
-    // create several Companies for this LEU
+    // create several records for this LEU
     val numUnits = 10
     val ids = (1 to numUnits)
     ids foreach { id =>
-      val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
-      chRepo.insert(data)
+      val pref = s"PAYE$id"
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, name1 = Some(s"PAYE-NAME-$pref"),ubrn = ubrn)
+      val newPaye = payeRepo.insert(paye)
     }
 
     // query a random record back for an ID between 1 and num (watch out for 0 coming back from random gen)
     val r = scala.util.Random
     val qid: String = r.nextInt(numUnits) match {
-      case 0 => s"COMPANY1"
-      case n => s"COMPANY$n"
+      case 0 => s"PAYE1"
+      case n => s"PAYE$n"
     }
 
     // fetch the data
-    val fetched = chRepo.getCompany(refperiod, qid)
+    val fetched = payeRepo.getPaye(refperiod, qid)
 
-    val expectedName = Some(s"Test company $qid")
+    val expectedName = Some(s"PAYE-NAME-$qid")
     // Remember name is an option as well
-    val actualName = fetched.map(_.companyname).flatten
+    val actualName = fetched.map(_.name1).flatten
 
     actualName shouldBe expectedName
   }
 
-  it should "count Company records correctly" in {
+
+  it should "count PAYE records correctly" in {
 
     val entref = 101L
     val refperiod = 201706
@@ -189,13 +195,13 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu1: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn1, entref = entref, businessname = Option(s"Legal Unit $ubrn1"))
     val newLeu1 = unitRepo.insert(leu1)
 
-    // create several Companies for this LEU
+    // create several records for this LEU
     val numUnits = 10
     val ids = (1 to numUnits)
     ids foreach { id =>
-      val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn1)
-      chRepo.insert(data)
+      val pref = s"PAYE$id"
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn1)
+      val newPaye = payeRepo.insert(paye)
     }
 
     val ubrn2 = 10002L
@@ -203,18 +209,18 @@ class CompanyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     val leu2: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn2, entref = entref, businessname = Option(s"Legal Unit $ubrn2"))
     val newLeu2 = unitRepo.insert(leu2)
 
-    // create several Companies for this LEU
+    // create several records for this LEU
     val start = numUnits + 1
     val end = numUnits + numUnits
     (start to end) foreach { id =>
-      val coNo = s"COMPANY$id"
-      val data: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn2)
-      chRepo.insert(data)
+      val pref = s"PAYE$id"
+      val paye: Paye = Paye(ref_period = refperiod, payeref = pref, ubrn = ubrn2)
+      val newPaye = payeRepo.insert(paye)
     }
 
-    // count ALL Companies i.e. includes both LEUs
+    // count ALL records i.e. includes both LEUs
     val expected = numUnits + numUnits
-    val counted = chRepo.count()
+    val counted = payeRepo.count()
 
     counted shouldBe expected
 

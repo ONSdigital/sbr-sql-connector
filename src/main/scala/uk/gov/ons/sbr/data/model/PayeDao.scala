@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
-object PayeRepo extends DataRepo[Paye]{
+object PayeDao extends SbrDao[Paye]{
 
   def getPayesForLegalUnit(ref_period: Long, ubrn: Long): List[Paye] = Paye.findByLegalUnit(ref_period, ubrn)
 

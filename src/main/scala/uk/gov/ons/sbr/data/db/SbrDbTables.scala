@@ -1,11 +1,10 @@
-package uk.gov.ons.sbr.data.demo
+package uk.gov.ons.sbr.data.db
 
 import com.typesafe.config.ConfigFactory
 import scalikejdbc.{DBSession, _}
-import uk.gov.ons.sbr.data.SbrDatabase
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
-trait DemoDbTable {
+trait SbrDbTable {
 
   // Get demo DB file locations
   val config = ConfigFactory.load()
@@ -30,7 +29,7 @@ trait DemoDbTable {
   }
 }
 
-object EnterpriseDbTable extends DemoDbTable{
+object EnterpriseDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS ent_2500 CASCADE""".execute.apply()
@@ -62,7 +61,7 @@ object EnterpriseDbTable extends DemoDbTable{
 
 
 
-object LegalUnitDbTable extends DemoDbTable{
+object LegalUnitDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS leu_2500 CASCADE""".execute.apply()
@@ -92,7 +91,7 @@ object LegalUnitDbTable extends DemoDbTable{
 
 
 
-object CompanyDbTable extends DemoDbTable{
+object CompanyDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS ch_2500 CASCADE""".execute.apply()
@@ -166,7 +165,7 @@ object CompanyDbTable extends DemoDbTable{
     """.execute.apply()
 }
 
-object VatDbTable extends DemoDbTable{
+object VatDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS vat_2500 CASCADE""".execute.apply()
@@ -213,7 +212,7 @@ object VatDbTable extends DemoDbTable{
 }
 
 
-object PayeDbTable extends DemoDbTable{
+object PayeDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS paye_2500 CASCADE""".execute.apply()
@@ -270,46 +269,7 @@ object PayeDbTable extends DemoDbTable{
 }
 
 
-object UnitKeyDbTable extends DemoDbTable{
-
-  def dropTable(implicit session: DBSession = autoSession) =
-    sql"""DROP TABLE IF EXISTS unit_2500 CASCADE""".execute.apply()
-
-  def createTable(implicit session: DBSession = autoSession) = sql"""
-  CREATE TABLE unit_2500
-   (
-    ref_period bigint NOT NULL,
-    unit_type VARCHAR(10)  NOT NULL,
-    unit_id VARCHAR(400)  NOT NULL,
-    CONSTRAINT units_2500_pkey PRIMARY KEY (ref_period, unit_type, unit_id)
-    )
-    """.execute.apply()
-
-  def populate()(implicit session: DBSession = autoSession) = {
-    // Populate unit keys from actual data in other tables
-    sql"""INSERT INTO unit_2500 (ref_period, unit_type, unit_id)
-      SELECT ref_period, 'ENT', entref FROM ent_2500
-      """.execute.apply()
-    sql"""INSERT INTO unit_2500 (ref_period, unit_type, unit_id)
-      SELECT ref_period, 'LEU', ubrn FROM leu_2500
-      """.execute.apply()
-
-    sql"""INSERT INTO unit_2500 (ref_period, unit_type, unit_id)
-      SELECT ref_period, 'CH', companynumber FROM ch_2500
-      """.execute.apply()
-
-    sql"""INSERT INTO unit_2500 (ref_period, unit_type, unit_id)
-      SELECT ref_period, 'PAYE', payeref FROM paye_2500
-      """.execute.apply()
-
-    sql"""INSERT INTO unit_2500 (ref_period, unit_type, unit_id)
-      SELECT ref_period, 'VAT', vatref FROM vat_2500
-      """.execute.apply()
-  }
-}
-
-
-object UnitLinksDbTable extends DemoDbTable{
+object UnitLinksDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS unit_links_2500 CASCADE""".execute.apply()

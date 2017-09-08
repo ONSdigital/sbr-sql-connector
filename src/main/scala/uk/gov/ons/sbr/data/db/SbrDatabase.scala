@@ -1,8 +1,9 @@
-package uk.gov.ons.sbr.data
+package uk.gov.ons.sbr.data.db
+
+import javax.inject.Singleton
 
 import com.typesafe.config._
 import scalikejdbc._
-import javax.inject.Singleton
 
 @Singleton
 class SbrDatabase(dbConfig: Config) {

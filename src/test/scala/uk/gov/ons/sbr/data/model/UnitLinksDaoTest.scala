@@ -3,10 +3,9 @@ package uk.gov.ons.sbr.data.model
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
-import uk.gov.ons.sbr.data.SbrDatabase
-import uk.gov.ons.sbr.data.utils.DbSchemaService
+import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
 
-class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
+class UnitLinksDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
 
   // Set up DB...
   val config = ConfigFactory.load()
@@ -17,7 +16,7 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
   implicit val session = db.session
 
   // Use same entity Repo object for all tests
-  val ukRepo = UnitKeyRepo
+  val ukRepo = UnitLinksDao
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -41,9 +40,9 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
 
   /** * TESTS START HERE ***/
 
-  behavior of "UnitKeyRepo"
+  behavior of "UnitLinksRepo"
 
-  it should "insert a range of different Unit keys and return correct count for ID" in {
+  it should "insert a range of different Unit Links and return correct count for ID" in {
 
     val refperiod = 201708 // not default period
 
@@ -56,7 +55,7 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
       id <- ids
       ut <- uts
       key = s"$id"
-      rec = UnitKey(refperiod, ut, key)
+      rec = UnitLinks(refperiod, ut, key, None, None, None)
     } yield ukRepo.insert(rec)
 
 
@@ -69,7 +68,7 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
   }
 
 
-  it should "insert a range of different Unit keys and return correct set of keys for ID" in {
+  it should "insert a range of different Unit Links and return correct set of keys for ID" in {
 
     val refperiod = 201708 // not default period
 
@@ -82,7 +81,7 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
       id <- ids
       ut <- uts
       key = s"$id"
-      rec = UnitKey(refperiod, ut, key)
+      rec = UnitLinks(refperiod, ut, key, None, None, None)
     } yield ukRepo.insert(rec)
 
     // Pick an ID at random
@@ -95,10 +94,37 @@ class UnitKeyRepoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfte
     // Query the records back
     val results = ukRepo.findById(refperiod, searchId)
 
-    val expected = uts.map{ut =>  UnitKey(refperiod, ut, searchId)}
+    val expected = uts.map{ut =>  UnitLinks(refperiod, ut, searchId)}
 
     // Check the results are correct
     results should contain theSameElementsAs expected
+
+  }
+
+  it should "insert a Unit Links record and allow update to non-key fields" in {
+
+    val refperiod = 201708 // not default period
+
+    // create several records for each Unit type
+    val ut = "LEU"
+    val entref = 1000L
+    val ubrn = 2000L
+    val children = "{}"
+    val rec = UnitLinks(refperiod, ut, s"$ubrn", Option(entref), Option(ubrn), Option(children) )
+    val unitLink:UnitLinks = ukRepo.insert(rec)
+
+    // Now update the record
+
+    val entref2 = 1001L
+    val ubrn2 = 2001L
+    val children2 = "{CHANGED}"
+    // Modify and save the record
+    val updated: UnitLinks = unitLink.copy(pEnt = Some(entref2), pLeu = Some(ubrn2), children = Some(children2)).save()
+
+    val results = ukRepo.findByKey(refperiod, ut, ubrn.toString)
+    val expected = Option(updated)
+
+    results shouldBe  expected
 
   }
 }

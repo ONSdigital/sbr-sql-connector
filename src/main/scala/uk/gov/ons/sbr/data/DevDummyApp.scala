@@ -1,8 +1,8 @@
 package uk.gov.ons.sbr.data
 
 import com.typesafe.config.ConfigFactory
+import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
 import uk.gov.ons.sbr.data.model._
-import uk.gov.ons.sbr.data.utils.DbSchemaService
 
 object DevDummyApp extends App {
 
@@ -21,25 +21,22 @@ object DevDummyApp extends App {
   DbSchemaService.loadDataIntoSchema
 
   // see if it got created
-  var count = EnterpriseRepo.count()
+  var count = EnterpriseDao.count()
   println(s"Enterprises: $count")
 
-  count = LegalUnitRepo.count()
+  count = LegalUnitDao.count()
   println(s"Legal Units: $count")
 
-  count = CompanyRepo.count()
+  count = CompanyDao.count()
   println(s"Companies: $count")
 
-  count = PayeRepo.count()
+  count = PayeDao.count()
   println(s"PAYE: $count")
 
-  count = VatRepo.count()
+  count = VatDao.count()
   println(s"VAT: $count")
 
-  count = UnitKeyRepo.count()
-  println(s"Unit keys: $count")
-
-  count = UnitLinksRepo.count()
+  count = UnitLinksDao.count()
   println(s"Unit links: $count")
 
 }

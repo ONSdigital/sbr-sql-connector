@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
-object VatRepo extends DataRepo[Vat]{
+object VatDao extends SbrDao[Vat]{
 
   def getVatsForLegalUnit(ref_period: Long, ubrn: Long): List[Vat] = Vat.findByLegalUnit(ref_period, ubrn)
 
