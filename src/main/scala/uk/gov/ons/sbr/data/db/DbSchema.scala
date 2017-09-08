@@ -7,16 +7,14 @@ import javax.inject.Singleton
 
 import com.typesafe.config.{Config}
 
-@Singleton
-class DbSchema(dbConfig: Config) {
+object DbSchema {
 
-  private val unitLinksTable = new UnitLinksDbTable(dbConfig)
-  private val vatTable = new VatDbTable(dbConfig)
-  private val payeTable = new PayeDbTable(dbConfig)
-  private val companyTable = new CompanyDbTable(dbConfig)
-  private val legalUnitTable = new LegalUnitDbTable(dbConfig)
-  private val enterpriseTable = new EnterpriseDbTable(dbConfig)
-
+  private val unitLinksTable =  UnitLinksDbTable
+  private val vatTable =  VatDbTable
+  private val payeTable =  PayeDbTable
+  private val companyTable =  CompanyDbTable
+  private val legalUnitTable =  LegalUnitDbTable
+  private val enterpriseTable =  EnterpriseDbTable
 
   def dropSchema(implicit session: DBSession = autoSession) = {
 
@@ -52,19 +50,19 @@ class DbSchema(dbConfig: Config) {
   }
 
 
-  def loadDataIntoSchema() = {
+  def loadDataIntoSchema(sampleDir: String) = {
 
-    enterpriseTable.loadFromSqlFile("ent_2500_data.sql")
+    enterpriseTable.loadFromSqlFile(s"$sampleDir/ent_2500_data.sql")
 
-    legalUnitTable.loadFromSqlFile("leu_2500_data.sql")
+    legalUnitTable.loadFromSqlFile(s"$sampleDir/leu_2500_data.sql")
 
-    companyTable.loadFromSqlFile("ch_2500_data.sql")
+    companyTable.loadFromSqlFile(s"$sampleDir/ch_2500_data.sql")
 
-    payeTable.loadFromSqlFile("paye_2500_data.sql")
+    payeTable.loadFromSqlFile(s"$sampleDir/paye_2500_data.sql")
 
-    vatTable.loadFromSqlFile("vat_2500_data.sql")
+    vatTable.loadFromSqlFile(s"$sampleDir/vat_2500_data.sql")
 
-    unitLinksTable.loadFromSqlFile("unit_links_2500_data.sql")
+    unitLinksTable.loadFromSqlFile(s"$sampleDir/unit_links_2500_data.sql")
   }
 
 }

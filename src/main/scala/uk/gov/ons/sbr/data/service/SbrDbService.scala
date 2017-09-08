@@ -13,7 +13,9 @@ class SbrDbService(dbConfig: Config) {
   val initSchema: Boolean= dbConfig.getBoolean("init")
   val loadSample: Boolean= dbConfig.getBoolean("load")
 
-  val dbSchema =  new DbSchema(dbConfig)
+  val sampleDir = dbConfig.getString("sample")
+
+  val dbSchema =  DbSchema
 
   // Get implicit session for voodoo with DB operations below
   implicit val session = db.session
@@ -21,6 +23,6 @@ class SbrDbService(dbConfig: Config) {
   // create tables?
   if (initSchema) dbSchema.createSchema
 
-  if (loadSample) dbSchema.loadDataIntoSchema
+  if (loadSample) dbSchema.loadDataIntoSchema(sampleDir)
 
 }

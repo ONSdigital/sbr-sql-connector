@@ -14,22 +14,19 @@ trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
   // Start DbService with this config
   val dbService = new SbrDbService(dbConfig)
 
-  // Get DB schema so we can build/drop tables
-  val dbSchema = new DbSchema(dbConfig)
-
   // Get implicit session for voodoo with DB operations below
   implicit val session = dbService.session
 
   override def beforeAll(): Unit = {
     super.beforeAll()
     // create DB schema
-    dbSchema.createSchema
+    dbService.dbSchema.createSchema
   }
 
   override def afterAll(): Unit = {
     super.afterAll()
     // drop DB schema
-    dbSchema.dropSchema
+    dbService.dbSchema.dropSchema
   }
 
   // Use same entity Repo objects for all tests

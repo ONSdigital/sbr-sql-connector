@@ -6,11 +6,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scalikejdbc.{DBSession, _}
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
-//trait SbrDbTable {
-
-abstract class SbrDbTable(dbConfig: Config) {
-  // Get demo DB file locations
-  val sampleDir = dbConfig.getString("sample")
+trait SbrDbTable {
 
   def dropTable(implicit session: DBSession = autoSession)
 
@@ -20,8 +16,7 @@ abstract class SbrDbTable(dbConfig: Config) {
   //TODO *** no error handling - fix this!!!
     import scala.io.Source
 
-    val filename = s"$sampleDir/$insertsFile"
-    for (line <- Source.fromFile(filename).getLines) {
+    for (line <- Source.fromFile(insertsFile).getLines) {
       val sql = line.trim
       if (sql != "")
         SQL(sql).execute.apply()
@@ -29,8 +24,7 @@ abstract class SbrDbTable(dbConfig: Config) {
   }
 }
 
-@Singleton
-class EnterpriseDbTable(dbConfig: Config) extends SbrDbTable(dbConfig){
+object EnterpriseDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS ent_2500 CASCADE""".execute.apply()
@@ -61,8 +55,7 @@ class EnterpriseDbTable(dbConfig: Config) extends SbrDbTable(dbConfig){
 
 
 
-@Singleton
-class LegalUnitDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
+object LegalUnitDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS leu_2500 CASCADE""".execute.apply()
@@ -92,8 +85,7 @@ class LegalUnitDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
 
 
 
-@Singleton
-class CompanyDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
+object  CompanyDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS ch_2500 CASCADE""".execute.apply()
@@ -167,8 +159,7 @@ class CompanyDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
     """.execute.apply()
 }
 
-@Singleton
-class VatDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
+object VatDbTable extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS vat_2500 CASCADE""".execute.apply()
@@ -215,8 +206,7 @@ class VatDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
 }
 
 
-@Singleton
-class PayeDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
+object PayeDbTable  extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS paye_2500 CASCADE""".execute.apply()
@@ -273,8 +263,7 @@ class PayeDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
 }
 
 
-@Singleton
-class UnitLinksDbTable (dbConfig: Config) extends SbrDbTable(dbConfig){
+object UnitLinksDbTable  extends SbrDbTable{
 
   def dropTable(implicit session: DBSession = autoSession) =
     sql"""DROP TABLE IF EXISTS unit_links_2500 CASCADE""".execute.apply()
