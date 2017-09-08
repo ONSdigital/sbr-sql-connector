@@ -2,7 +2,7 @@ package uk.gov.ons.sbr.data.model
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
-import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
+import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 
 class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers {
 
@@ -25,14 +25,14 @@ class VatDaoTest extends FlatSpec with BeforeAndAfterAll with BeforeAndAfterEach
     super.beforeAll()
 
     // create DB schema
-    DbSchemaService.createSchema
+    DbSchema.createSchema
   }
 
 
   override def afterAll(): Unit = {
     super.afterAll()
     // drop DB schema
-    DbSchemaService.dropSchema
+    DbSchema.dropSchema
   }
 
 

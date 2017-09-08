@@ -1,26 +1,22 @@
 package uk.gov.ons.sbr.data
 
 import com.typesafe.config.ConfigFactory
-import uk.gov.ons.sbr.data.db.{DbSchemaService, SbrDatabase}
+import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
 import uk.gov.ons.sbr.data.model._
+import uk.gov.ons.sbr.data.service.SbrDbService
 
 object DevDummyApp extends App {
 
-  // Set up DB...
+  // Get DB config info
   val config = ConfigFactory.load()
   val dbConfig = config.getConfig("db").getConfig("default")
-  val db = new SbrDatabase(dbConfig)
+  // Start DbService with this config
+  val dbService = new SbrDbService(dbConfig)
 
   // Get implicit session for voodoo with DB operations below
-  implicit val session = db.session
+  implicit val session = dbService.session
 
-  // create table...
-  DbSchemaService.createSchema
-
-  // load demo data...
-  DbSchemaService.loadDataIntoSchema
-
-  // see if it got created
+  // see if data got created
   var count = EnterpriseDao.count()
   println(s"Enterprises: $count")
 

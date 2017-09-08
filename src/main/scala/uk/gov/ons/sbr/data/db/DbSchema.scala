@@ -3,7 +3,7 @@ package uk.gov.ons.sbr.data.db
 import scalikejdbc._
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
-object DbSchemaService {
+object DbSchema {
 
   def dropSchema(implicit session: DBSession = autoSession) = {
 
@@ -21,7 +21,7 @@ object DbSchemaService {
   }
 
   def createSchema(implicit session: DBSession = autoSession) = {
-    
+
     dropSchema
 
     EnterpriseDbTable.createTable
