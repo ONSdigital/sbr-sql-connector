@@ -1,7 +1,7 @@
 package uk.gov.ons.sbr.data
 
 import com.typesafe.config.ConfigFactory
-import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
+import uk.gov.ons.sbr.data.db._
 import uk.gov.ons.sbr.data.model._
 import uk.gov.ons.sbr.data.service.SbrDbService
 

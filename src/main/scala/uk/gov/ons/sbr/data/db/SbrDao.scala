@@ -1,4 +1,4 @@
-package uk.gov.ons.sbr.data.model
+package uk.gov.ons.sbr.data.db
 
 trait SbrDao [T] {
 

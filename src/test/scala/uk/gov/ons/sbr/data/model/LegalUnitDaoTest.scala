@@ -3,9 +3,10 @@ package uk.gov.ons.sbr.data.model
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec, Matchers}
 import uk.gov.ons.sbr.data.db.{DbSchema, SbrDatabase}
+import uk.gov.ons.sbr.data.model.UnitType._
 
 class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
-  
+
   /** * TESTS START HERE ***/
 
   behavior of "LegalUnitRepo"
@@ -149,5 +150,53 @@ class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
 
     counted shouldBe expected
 
+  }
+
+  it should "insert complete Legal Unit hierarchy and getLeuChildren() correctly" in {
+
+    val entref = 100L
+    val refperiod = 201708 // not default period
+
+    // create parent Enterprise first (FK)
+    val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
+    entDao.insert(ent)
+
+    // create Legal Unit for this Enterprise
+    val ubrn = 1234L
+    val leu: LegalUnit = LegalUnit(ref_period = refperiod, ubrn = ubrn, entref = entref, businessname = Option(s"Legal Unit $ubrn"))
+    val newLeu = unitDao.insert(leu)
+
+    // add Company for this LEU...
+    val coNo = "COMPANY0001"
+    val co: Company = Company(ref_period = refperiod, companynumber = coNo, companyname = Some(s"Test company $coNo"), ubrn = ubrn)
+    val newCo = chDao.insert(co)
+
+    // Now create PAYEs for this LEU
+    val pref1 = "PAYE0001"
+    val paye1: Paye = Paye(ref_period = refperiod, payeref = pref1, ubrn = ubrn)
+    payeDao.insert(paye1)
+
+    val pref2 = "PAYE0002"
+    val paye2: Paye = Paye(ref_period = refperiod, payeref = pref2, ubrn = ubrn)
+    payeDao.insert(paye2)
+
+    // Now create VATs for this LEU
+    val vref1 = "VAT0001"
+    val vat1: Vat = Vat(ref_period = refperiod, vatref = vref1, ubrn = ubrn)
+    vatDao.insert(vat1)
+
+    val vref2 = "VAT0002"
+    val vat2: Vat = Vat(ref_period = refperiod, vatref = vref2, ubrn = ubrn)
+    vatDao.insert(vat2)
+
+    // Now see if we can query it all back
+    val fetched: LeuChildren = unitDao.getChildren(refperiod, ubrn)
+
+    // compare the Map for the LEU children
+    val expected: Map[String, UnitType] = Map(coNo -> CH,
+      pref1 -> PAYE, pref2 -> PAYE,
+      vref1 -> VAT, vref2 -> VAT)
+
+    fetched.asMap() should contain theSameElementsAs (expected)
   }
 }

@@ -2,7 +2,7 @@ package uk.gov.ons.sbr.data.model
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest._
-import uk.gov.ons.sbr.data.db.DbSchema
+import uk.gov.ons.sbr.data.db._
 import uk.gov.ons.sbr.data.service.SbrDbService
 
 trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>

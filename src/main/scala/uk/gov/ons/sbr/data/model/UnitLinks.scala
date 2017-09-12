@@ -1,5 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
+import play.api.libs.json.{JsObject, JsValue, Json}
 import scalikejdbc._
 
 case class UnitLinks(ref_period: Long,
@@ -21,6 +22,7 @@ case class UnitLinks(ref_period: Long,
 }
 
 object UnitLinks extends SQLSyntaxSupport[UnitLinks] {
+
   // This is where the DB voodoo happens
 
   override val tableName = "unit_links_2500"

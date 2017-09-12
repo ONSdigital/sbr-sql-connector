@@ -2,6 +2,10 @@ package uk.gov.ons.sbr.data.model
 
 import scalikejdbc._
 
+// Use JSOn to convert class -> JSON -> Map easily
+import play.api.libs.json._
+
+
 case class Enterprise( ref_period: Long,
                        entref: Long,
                        ent_tradingstyle: Option[String],
@@ -25,9 +29,36 @@ case class Enterprise( ref_period: Long,
   // deletes this instance from teh databaser
   def destroy()(implicit session: DBSession = Enterprise.autoSession): Unit =
     Enterprise.destroy(this.ref_period, this.entref)(session)
+
+
 }
 
 object Enterprise extends SQLSyntaxSupport[Enterprise] {
+
+  // This bit will allow us to convert to/from JSON
+  implicit val enterpriseWrites = Json.writes[Enterprise]
+
+  // This stuff is for converting to StatUnits
+
+  val excludeFields: Seq[String] = List("entref", "ref_period")
+
+  def variablesToMap(ent: Enterprise): Map[String, String] = {
+    // convert to JSON
+    val entJson: JsValue = Json.toJson(ent)
+    // now convert to Map of String -> JsValue
+    val entMap: Map[String, JsValue] = entJson match {
+      case JsObject(fields) => fields.toMap
+      case _ => Map.empty[String, JsValue]
+    }
+    // convert to Map of String -> String and exclude key fields
+    val varMap: Map[String, String] =
+      for {
+        (k, v) <- entMap
+        if (!(excludeFields.contains(k)))
+      } yield (k, v.as[String])
+    varMap
+  }
+
   // This is where the DB voodoo happens
 
   override val tableName = "ent_2500"

@@ -1,7 +1,9 @@
 package uk.gov.ons.sbr.data.model
 
 
+import play.api.libs.json.{JsObject, JsValue, Json}
 import scalikejdbc._
+import uk.gov.ons.sbr.data.db.{CompanyDao, PayeDao, VatDao}
 
 case class LegalUnit(
                       ref_period: Long,
@@ -26,6 +28,31 @@ case class LegalUnit(
 
 
 object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
+
+  // This bit will allow us to convert to/from JSON
+  implicit val leuWrites = Json.writes[LegalUnit]
+
+  // This stuff is for converting to StatUnits
+
+  val excludeFields: Seq[String] = List("entref", "ubrn", "ref_period")
+
+  def variablesToMap(obj: LegalUnit): Map[String, String] = {
+    // convert to JSON
+    val objJson: JsValue = Json.toJson(obj)
+    // now convert to Map of String -> JsValue
+    val objMap: Map[String, JsValue] = objJson match {
+      case JsObject(fields) => fields.toMap
+      case _ => Map.empty[String, JsValue]
+    }
+    // convert to Map of String -> String and exclude key fields
+    val varMap: Map[String, String] =
+      for {
+        (k, v) <- objMap
+        if (!(excludeFields.contains(k)))
+      } yield (k, v.as[String])
+    varMap
+  }
+
   // This is where the DB voodoo happens
 
   override val tableName = "leu_2500"
@@ -113,5 +140,21 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
   def countAll()(implicit session: DBSession = autoSession): Long = withSQL {
     select(sqls.count).from(LegalUnit as u)
   }.map(rs => rs.long(1)).single.apply().get
+
+  // Need to get child objects for an LEU
+
+  def getChildren(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): LeuChildren = {
+
+    // Get Company if any - Should only be ONE CH entry for an LEU
+    val ch: Option[String] = CompanyDao.getCompaniesForLegalUnit(ref_period, ubrn).map(_.companynumber).headOption
+
+    // Get PAYEs if any
+    val payes = PayeDao.getPayesForLegalUnit(ref_period, ubrn).map(_.payeref)
+
+    // Get VATs if any
+    val vats = VatDao.getVatsForLegalUnit(ref_period, ubrn).map(_.vatref)
+
+    LeuChildren(ref_period, ubrn, ch, payes, vats)
+  }
 
 }

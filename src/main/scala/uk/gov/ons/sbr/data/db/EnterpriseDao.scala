@@ -1,5 +1,6 @@
-package uk.gov.ons.sbr.data.model
+package uk.gov.ons.sbr.data.db
 
+import uk.gov.ons.sbr.data.model.Enterprise
 
 object EnterpriseDao extends SbrDao[Enterprise]{
 

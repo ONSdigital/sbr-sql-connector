@@ -90,7 +90,7 @@ class UnitLinksDaoTest extends FlatSpec with DaoTest with Matchers {
     // Modify and save the record
     val updated: UnitLinks = unitLink.copy(pEnt = Some(entref2), pLeu = Some(ubrn2), children = Some(children2)).save()
 
-    val results = linksDao.findByKey(refperiod, ut, ubrn.toString)
+    val results = linksDao.findByKey(refperiod, ut.toString, ubrn.toString)
     val expected = Option(updated)
 
     results shouldBe  expected

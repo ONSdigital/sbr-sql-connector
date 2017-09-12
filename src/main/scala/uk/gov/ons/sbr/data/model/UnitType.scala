@@ -1,5 +1,7 @@
 package uk.gov.ons.sbr.data.model
 
+import play.api.libs.json.Json
+
 object UnitType extends Enumeration  {
   /*
    Scala Enumerations are problematic because they all evaluate to the same type (Enumeration),
@@ -13,5 +15,6 @@ object UnitType extends Enumeration  {
    */
   type UnitType = Value
   val ENT, LEU, CH, PAYE, VAT = Value
+
 }
 

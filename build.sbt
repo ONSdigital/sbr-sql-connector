@@ -7,6 +7,7 @@ scalaVersion := "2.12.3"
 val Versions = new {
   val config = "1.3.1"
   val h2 = "1.4.196"
+  val play = "2.6.3"
   val qos = "1.2.3"
   val scalike = "3.0.2"
   val slick = "3.2.1"
@@ -15,6 +16,9 @@ val Versions = new {
 }
 
 libraryDependencies += "com.typesafe" % "config" % Versions.config
+
+// Use Play JSON parsers
+libraryDependencies += "com.typesafe.play" %% "play-json" % Versions.play % "provided"
 
 // Change this to another test framework if you prefer
 libraryDependencies += "org.scalactic" %% "scalactic" % Versions.test
@@ -37,4 +41,8 @@ libraryDependencies ++= Seq(
 
 // Stop tests running in parallel because the DB schema gets messed up
 parallelExecution in Test := false
+
+// Resolvers
+resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+
 
