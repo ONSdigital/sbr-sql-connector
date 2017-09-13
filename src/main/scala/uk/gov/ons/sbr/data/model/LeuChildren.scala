@@ -11,15 +11,16 @@ case class LeuChildren(ref_period: Long,
                        payeRefs: List[String] = Nil,
                        vatRefs: List[String] = Nil)
 {
-  def asMap(): Map[String, UnitType] = {
+  def asMap(): Map[String, String] = {
     // WARNING: This mapping is required for comatibility with the mid-tier API,
-    // but it is NOT reliable because we could have comflicting IDs of different types.
+    // but it is NOT reliable because we could have conflicting IDs of different types.
 
-    val ch: Option[(String, model.UnitType.Value)] = this.companyNo.map(ref => (ref ->UnitType.CH))
-    val payes = this.payeRefs.map{ p => (p -> UnitType.PAYE)}.toMap
-    val vats = this.vatRefs.map{ v => (v -> UnitType.VAT)}.toMap
+    val ch = this.companyNo.map(ref => (ref ->UnitType.CH.toString))
 
-    val data: Map[String, UnitType] = payes ++ vats
+    val payes = this.payeRefs.map{ p => (p -> UnitType.PAYE.toString)}.toMap
+    val vats = this.vatRefs.map{ v => (v -> UnitType.VAT.toString)}.toMap
+
+    val data: Map[String, String] = payes ++ vats
 
     if (!ch.isEmpty) data + ch.get
     else data

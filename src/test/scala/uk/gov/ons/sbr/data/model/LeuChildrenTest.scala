@@ -28,9 +28,9 @@ class LeuChildrenTest extends FlatSpec with Matchers{
     // Make the LeuCHildren object
     val kidz = LeuChildren(refperiod, ubrn, Some(coNo), payes, vats)
 
-    val expected: Map[String, UnitType] = Map("COMPANY0001" -> CH,
-                                              "PAYE0002" -> PAYE, "PAYE0001" -> PAYE,
-                                              "VAT0001" -> VAT,  "VAT0002" -> VAT)
+    val expected: Map[String, String] = Map("COMPANY0001" -> CH.toString,
+                                              "PAYE0002" -> PAYE.toString, "PAYE0001" -> PAYE.toString,
+                                              "VAT0001" -> VAT.toString,  "VAT0002" -> VAT.toString)
 
     kidz.asMap() should contain theSameElementsAs (expected)
   }

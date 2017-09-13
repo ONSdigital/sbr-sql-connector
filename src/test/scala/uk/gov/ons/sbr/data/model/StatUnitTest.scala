@@ -123,7 +123,7 @@ class StatUnitTest extends FlatSpec with Matchers {
 
     val refperiod = 201708 // not default period
 
-    val su: StatUnit = StatUnit(refperiod,"DUMMY",UnitType.LEU)
+    val su: StatUnit = StatUnit(refperiod,"DUMMY",UnitType.LEU.toString)
     // should not be able to convert SU to Ent
     an [IllegalArgumentException] should be thrownBy {
       Enterprise(su)

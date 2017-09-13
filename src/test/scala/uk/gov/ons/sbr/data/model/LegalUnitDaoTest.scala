@@ -193,9 +193,9 @@ class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
     val fetched: LeuChildren = unitDao.getChildren(refperiod, ubrn)
 
     // compare the Map for the LEU children
-    val expected: Map[String, UnitType] = Map(coNo -> CH,
-      pref1 -> PAYE, pref2 -> PAYE,
-      vref1 -> VAT, vref2 -> VAT)
+    val expected: Map[String, String] = Map(coNo -> CH.toString,
+      pref1 -> PAYE.toString, pref2 -> PAYE.toString,
+      vref1 -> VAT.toString, vref2 -> VAT.toString)
 
     fetched.asMap() should contain theSameElementsAs (expected)
   }

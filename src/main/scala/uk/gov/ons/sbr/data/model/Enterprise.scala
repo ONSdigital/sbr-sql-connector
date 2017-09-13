@@ -66,7 +66,7 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   // Convert from a StatUnit (remember all data fields are in variables map):
 
   def apply(su: StatUnit): Enterprise = {
-    if (su.unitType == UnitType.ENT)
+    if (su.unitType == UnitType.ENT.toString)
       Enterprise(
         su.refPeriod,
         su.key.toLong,

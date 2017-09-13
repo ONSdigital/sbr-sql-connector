@@ -4,9 +4,9 @@ import uk.gov.ons.sbr.data.model.UnitType.UnitType
 
 case class StatUnitLinks(refPeriod: Long,
                          key: String,
-                         unitType: UnitType,
+                         unitType: String,
                          parents: Map[UnitType, String] = Map.empty[UnitType, String],
-                         children: Map[String, UnitType] = Map.empty[String, UnitType],
+                         children: Map[String, String] = Map.empty[String, String],
                          childJsonString: String = "") {
 
 }
@@ -26,7 +26,7 @@ object StatUnitLinks {
     StatUnitLinks(
       refPeriod = obj.ref_period,
       key = obj.unitId,
-      unitType = UnitType.withName(obj.unitType),
+      unitType = obj.unitType, //UnitType.withName(obj.unitType),
       parents = parents,
       childJsonString = obj.children.getOrElse(""))
   }
