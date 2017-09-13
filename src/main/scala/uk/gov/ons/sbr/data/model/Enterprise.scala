@@ -37,7 +37,6 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
 
   // This bit will allow us to convert to/from JSON
   implicit val enterpriseWrites = Json.writes[Enterprise]
-  //implicit val enterpriseReads = Json.reads[Enterprise]
 
   // This stuff is for converting to StatUnits
 
@@ -46,8 +45,6 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   def variablesToMap(ent: Enterprise): Map[String, String] = {
     // convert to JSON
     val entJson: JsValue = Json.toJson(ent)
-
-    println(s"JSON:  $entJson")
 
     // now convert to Map of String -> JsValue
     val entMap: Map[String, JsValue] = entJson match {
@@ -182,5 +179,10 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   def countAll()(implicit session: DBSession = autoSession): Long = withSQL {
     select(sqls.count).from(Enterprise as e)
   }.map(rs => rs.long(1)).single.apply().get
+
+  def getAsStatUnit(ref_period: Long, entref: Long)(implicit session: DBSession = autoSession): Option[StatUnit] = {
+    find(ref_period, entref)(session).map(StatUnit(_))
+  }
+
 
 }

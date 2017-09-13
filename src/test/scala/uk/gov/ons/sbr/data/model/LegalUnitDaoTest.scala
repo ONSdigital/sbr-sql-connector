@@ -199,4 +199,5 @@ class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
 
     fetched.asMap() should contain theSameElementsAs (expected)
   }
+
 }

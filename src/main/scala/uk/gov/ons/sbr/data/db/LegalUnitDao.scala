@@ -1,8 +1,10 @@
 package uk.gov.ons.sbr.data.db
 
-import uk.gov.ons.sbr.data.model.{LegalUnit, LeuChildren}
+import uk.gov.ons.sbr.data.model.{LegalUnit, LeuChildren, StatUnit}
 
 object LegalUnitDao extends SbrDao[LegalUnit]{
+
+  def getAsStatUnit(ref_period: Long, ubrn: Long): Option[StatUnit] = LegalUnit.getAsStatUnit(ref_period, ubrn)
 
   def getLegalUnit(ref_period: Long, ubrn: Long): Option[LegalUnit] = LegalUnit.find(ref_period, ubrn)
 

@@ -138,4 +138,23 @@ class EnterpriseDaoTest extends FlatSpec with DaoTest with Matchers {
 
     counted shouldBe 0
   }
+
+  it should "insert basic Enterprise and query it correctly as a StatUnit" in {
+
+    val entref = 100L
+    val refperiod = 201708 // not default period
+
+    val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
+    val inserted: Enterprise = entDao.insert(ent)
+
+    val entAsSu: StatUnit = StatUnit(ent)
+
+    val fetched = dbService.getEnterpriseAsStatUnit(refperiod, entref)
+
+    fetched shouldBe Option(entAsSu)
+
+    // delete record
+    inserted.destroy()
+
+  }
 }

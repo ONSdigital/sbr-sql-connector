@@ -157,4 +157,11 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
     LeuChildren(ref_period, ubrn, ch, payes, vats)
   }
 
+  def getAsStatUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): Option[StatUnit] = {
+
+    val leu = find(ref_period, ubrn)(session)
+    leu.map(StatUnit(_))
+  }
+
+
 }

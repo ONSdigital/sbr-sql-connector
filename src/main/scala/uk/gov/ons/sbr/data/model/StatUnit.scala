@@ -7,12 +7,11 @@ case class StatUnit(refPeriod: Long,
                     key: String,
                     unitType: String,
                     variables: Map[String, String] = Map.empty[String, String],
-                    children: Seq[StatUnit] = Nil,
-                    links: Option[StatUnitLinks] = None)
+                    var children: Seq[StatUnit] = Nil)
 
 object StatUnit {
   // This bit will allow us to convert to/from JSON
-  implicit val suWrites = Json.writes[Enterprise]
+  implicit val suWrites = Json.writes[StatUnit]
 
   def apply(obj: Enterprise): StatUnit = {
     // convert an Enterprise to a StatUnit of type ENT

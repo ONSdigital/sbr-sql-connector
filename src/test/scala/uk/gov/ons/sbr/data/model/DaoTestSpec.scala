@@ -17,6 +17,16 @@ trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
   // Get implicit session for voodoo with DB operations below
   implicit val session = dbService.session
 
+
+  // Use same entity Repo objects for all tests
+  val entDao = dbService.entDao
+  val unitDao = dbService.unitDao
+  val chDao = dbService.chDao
+  val payeDao = dbService.payeDao
+  val vatDao = dbService.vatDao
+  val linksDao = dbService.linksDao
+
+
   override def beforeAll(): Unit = {
     super.beforeAll()
     // create DB schema
@@ -28,14 +38,6 @@ trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
     // drop DB schema
     dbService.dbSchema.dropSchema
   }
-
-  // Use same entity Repo objects for all tests
-  val entDao = EnterpriseDao
-  val unitDao = LegalUnitDao
-  val chDao = CompanyDao
-  val payeDao = PayeDao
-  val vatDao = VatDao
-  val linksDao = UnitLinksDao
 
   // delete all data between tests
   override def beforeEach(): Unit = {

@@ -1,8 +1,10 @@
 package uk.gov.ons.sbr.data.db
 
-import uk.gov.ons.sbr.data.model.Enterprise
+import uk.gov.ons.sbr.data.model.{Enterprise, StatUnit}
 
 object EnterpriseDao extends SbrDao[Enterprise]{
+
+  def getAsStatUnit(ref_period: Long, entref: Long): Option[StatUnit] = Enterprise.getAsStatUnit(ref_period, entref)
 
   def getEnterprise(ref_period: Long, entref: Long): Option[Enterprise] = Enterprise.find(ref_period, entref)
 
