@@ -8,6 +8,8 @@ object EnterpriseDao extends SbrDao[Enterprise]{
 
   def getEnterprise(ref_period: Long, entref: Long): Option[Enterprise] = Enterprise.find(ref_period, entref)
 
+  // general DAO methods
+
   override def insert(data: Enterprise): Enterprise = Enterprise.create(data)
 
   override def update(data: Enterprise): Enterprise = data.save

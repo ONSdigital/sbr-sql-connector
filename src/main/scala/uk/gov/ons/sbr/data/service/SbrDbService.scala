@@ -9,6 +9,7 @@ import uk.gov.ons.sbr.data.model.StatUnit
 @Singleton
 class SbrDbService(dbConfig: Config) {
 
+
   // Set up DB...
   val db = new SbrDatabase(dbConfig)
   val initSchema: Boolean = dbConfig.getBoolean("init")
@@ -36,17 +37,24 @@ class SbrDbService(dbConfig: Config) {
 
   // Service methods
 
+  // Ony use this hard-coded value for demo!!!
+  def defaultRefPeriod: Long = 201706
+
   def getEnterpriseAsStatUnit(ref_period: Long, entref: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this Enterprise
     // Get the Ent record first...
     val entSU: Option[StatUnit] = entDao.getAsStatUnit(ref_period, entref)
     // .. then get children i.e. LEUs
-    val leus= unitDao.getLegalUnitsForEnterprise(ref_period, entref)
+    val leus = unitDao.getLegalUnitsForEnterprise(ref_period, entref)
     // fetch these as SUs with nested children (CH, PAYEs, VATs)
-    val leuSUs: Seq[StatUnit] = leus.map{ x => getLegalUnitAsStatUnit(x.ref_period, x.ubrn)}.flatten
+    val leuSUs: Seq[StatUnit] = leus.map { x => getLegalUnitAsStatUnit(x.ref_period, x.ubrn) }.flatten
     // Add LEUs (if any) to children
     entSU.map { e => e.children ++= leuSUs; e }
   }
+
+  // Need proper logic for deciding default Ref Period
+  def getEnterpriseAsStatUnit(entref: Long): Option[StatUnit] = getEnterpriseAsStatUnit(defaultRefPeriod, entref)
+
 
   def getLegalUnitAsStatUnit(ref_period: Long, ubrn: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this LEU
@@ -68,17 +76,27 @@ class SbrDbService(dbConfig: Config) {
     leuSU
   }
 
+  def getLegalUnitAsStatUnit(ubrn: Long): Option[StatUnit] = getLegalUnitAsStatUnit(defaultRefPeriod, ubrn)
+
   // These Stat unit types have no children so they are easy to construct
   def getCompanyAsStatUnit(ref_period: Long, companyno: String): Option[StatUnit] = {
     chDao.getCompany(ref_period, companyno).map(StatUnit(_))
   }
 
+  def getCompanyAsStatUnit(companyno: String): Option[StatUnit] = getCompanyAsStatUnit(defaultRefPeriod, companyno)
+
+
   def getPayeAsStatUnit(ref_period: Long, payeref: String): Option[StatUnit] = {
     payeDao.getPaye(ref_period, payeref).map(StatUnit(_))
   }
 
+  def getPayeAsStatUnit(payeref: String): Option[StatUnit] = getPayeAsStatUnit(defaultRefPeriod, payeref)
+
+
   def getVatAsStatUnit(ref_period: Long, vatref: String): Option[StatUnit] = {
     vatDao.getVat(ref_period, vatref).map(StatUnit(_))
   }
+
+  def getVatAsStatUnit(vatref: String): Option[StatUnit] = getVatAsStatUnit(defaultRefPeriod, vatref)
 
 }
