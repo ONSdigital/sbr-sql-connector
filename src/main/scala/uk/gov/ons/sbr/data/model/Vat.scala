@@ -1,6 +1,8 @@
 package uk.gov.ons.sbr.data.model
 
 
+import ai.x.play.json.Jsonx
+import play.api.libs.json.{JsObject, JsValue, Json}
 import scalikejdbc._
 
 case class Vat(
@@ -43,6 +45,29 @@ case class Vat(
 }
 
 object Vat extends SQLSyntaxSupport[Vat] {
+
+  // This bit will allow us to convert to/from JSON (need to use Jsonx for >22 fields)
+  implicit val vatFormat = Jsonx.formatCaseClass[Vat]
+
+  // This stuff is for converting to StatUnits
+  val excludeFields: Seq[String] = List("vatref", "ubrn", "ref_period")
+
+  def variablesToMap(obj: Vat): Map[String, String] = {
+    // convert to JSON
+    val objJson: JsValue = Json.toJson(obj)
+    // now convert to Map of String -> JsValue
+    val objMap: Map[String, JsValue] = objJson match {
+      case JsObject(fields) => fields.toMap
+      case _ => Map.empty[String, JsValue]
+    }
+    // convert to Map of String -> String and exclude key fields
+    val varMap: Map[String, String] =
+      for {
+        (k, v) <- objMap
+        if (!(excludeFields.contains(k)))
+      } yield (k, v.as[String])
+    varMap
+  }
   // This is where the DB voodoo happens
 
   override val tableName = "vat_2500"

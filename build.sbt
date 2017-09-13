@@ -8,6 +8,7 @@ val Versions = new {
   val config = "1.3.1"
   val h2 = "1.4.196"
   val play = "2.6.3"
+  val playJsonExt = "0.10.0"
   val qos = "1.2.3"
   val scalike = "3.0.2"
   val slick = "3.2.1"
@@ -19,6 +20,9 @@ libraryDependencies += "com.typesafe" % "config" % Versions.config
 
 // Use Play JSON parsers
 libraryDependencies += "com.typesafe.play" %% "play-json" % Versions.play % "provided"
+
+// need this to use JSON with >22 case class fields
+libraryDependencies += "ai.x" %% "play-json-extensions" % Versions.playJsonExt
 
 // Change this to another test framework if you prefer
 libraryDependencies += "org.scalactic" %% "scalactic" % Versions.test

@@ -6,22 +6,22 @@ import scalikejdbc._
 import play.api.libs.json._
 
 
-case class Enterprise( ref_period: Long,
-                       entref: Long,
-                       ent_tradingstyle: Option[String],
-                       ent_address1: Option[String] = None,
-                       ent_address2: Option[String] = None,
-                       ent_address3: Option[String] = None,
-                       ent_address4: Option[String] = None,
-                       ent_address5: Option[String] = None,
-                       ent_postcode: Option[String] = None,
-                       legalstatus: Option[String] = None,
-                       paye_jobs: Option[String] = None,
-                       employees: Option[String] = None,
-                       standard_vat_turnover: Option[String] = None,
-                       num_unique_payerefs: Option[String] = None,
-                       num_unique_vatrefs: Option[String] = None,
-                       contained_rep_vat_turnover: Option[String] = None
+case class Enterprise(ref_period: Long,
+                      entref: Long,
+                      ent_tradingstyle: Option[String],
+                      ent_address1: Option[String] = None,
+                      ent_address2: Option[String] = None,
+                      ent_address3: Option[String] = None,
+                      ent_address4: Option[String] = None,
+                      ent_address5: Option[String] = None,
+                      ent_postcode: Option[String] = None,
+                      legalstatus: Option[String] = None,
+                      paye_jobs: Option[String] = None,
+                      employees: Option[String] = None,
+                      standard_vat_turnover: Option[String] = None,
+                      num_unique_payerefs: Option[String] = None,
+                      num_unique_vatrefs: Option[String] = None,
+                      contained_rep_vat_turnover: Option[String] = None
                      ) {
   // Allows you to save current instance directly
   def save()(implicit session: DBSession = Enterprise.autoSession): Enterprise = Enterprise.save(this)(session)
@@ -37,6 +37,7 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
 
   // This bit will allow us to convert to/from JSON
   implicit val enterpriseWrites = Json.writes[Enterprise]
+  //implicit val enterpriseReads = Json.reads[Enterprise]
 
   // This stuff is for converting to StatUnits
 
@@ -45,6 +46,9 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   def variablesToMap(ent: Enterprise): Map[String, String] = {
     // convert to JSON
     val entJson: JsValue = Json.toJson(ent)
+
+    println(s"JSON:  $entJson")
+
     // now convert to Map of String -> JsValue
     val entMap: Map[String, JsValue] = entJson match {
       case JsObject(fields) => fields.toMap
@@ -58,6 +62,33 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
       } yield (k, v.as[String])
     varMap
   }
+
+  // Convert from a StatUnit (remember all data fields are in variables map):
+
+  def apply(su: StatUnit): Enterprise = {
+    if (su.unitType == UnitType.ENT)
+      Enterprise(
+        su.refPeriod,
+        su.key.toLong,
+        su.variables.get("ent_tradingstyle"),
+        su.variables.get("ent_address1"),
+        su.variables.get("ent_address2"),
+        su.variables.get("ent_address3"),
+        su.variables.get("ent_address4"),
+        su.variables.get("ent_address5"),
+        su.variables.get("ent_postcode"),
+        su.variables.get("legalstatus"),
+        su.variables.get("paye_jobs"),
+        su.variables.get("employees"),
+        su.variables.get("standard_vat_turnover"),
+        su.variables.get("num_unique_payerefs"),
+        su.variables.get("num_unique_vatrefs"),
+        su.variables.get("contained_rep_vat_turnover")
+      )
+      else
+        throw new IllegalArgumentException(s"Requires Enterprise. Found StatUnit of type ${su.unitType}")
+  }
+
 
   // This is where the DB voodoo happens
 
@@ -93,21 +124,21 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
     withSQL {
       insert.into(Enterprise).namedValues(
         column.ref_period -> ent.ref_period,
-        column.entref-> ent.entref,
-        column.ent_tradingstyle-> ent.ent_tradingstyle,
-        column.ent_address1-> ent.ent_address1,
-        column.ent_address2-> ent.ent_address2,
-        column.ent_address3-> ent.ent_address3,
-        column.ent_address4-> ent.ent_address4,
-        column.ent_address5-> ent.ent_address5,
-        column.ent_postcode-> ent.ent_postcode,
-        column.legalstatus-> ent.legalstatus,
-        column.paye_jobs-> ent.paye_jobs,
-        column.employees-> ent.employees,
-        column.standard_vat_turnover-> ent.standard_vat_turnover,
-        column.num_unique_payerefs-> ent.num_unique_payerefs,
-        column.num_unique_vatrefs-> ent.num_unique_vatrefs,
-        column.contained_rep_vat_turnover-> ent.contained_rep_vat_turnover
+        column.entref -> ent.entref,
+        column.ent_tradingstyle -> ent.ent_tradingstyle,
+        column.ent_address1 -> ent.ent_address1,
+        column.ent_address2 -> ent.ent_address2,
+        column.ent_address3 -> ent.ent_address3,
+        column.ent_address4 -> ent.ent_address4,
+        column.ent_address5 -> ent.ent_address5,
+        column.ent_postcode -> ent.ent_postcode,
+        column.legalstatus -> ent.legalstatus,
+        column.paye_jobs -> ent.paye_jobs,
+        column.employees -> ent.employees,
+        column.standard_vat_turnover -> ent.standard_vat_turnover,
+        column.num_unique_payerefs -> ent.num_unique_payerefs,
+        column.num_unique_vatrefs -> ent.num_unique_vatrefs,
+        column.contained_rep_vat_turnover -> ent.contained_rep_vat_turnover
       )
     }.update.apply()
 
@@ -117,20 +148,20 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   def save(ent: Enterprise)(implicit session: DBSession = autoSession): Enterprise = {
     withSQL {
       update(Enterprise).set(
-        column.ent_tradingstyle-> ent.ent_tradingstyle,
-        column.ent_address1-> ent.ent_address1,
-        column.ent_address2-> ent.ent_address2,
-        column.ent_address3-> ent.ent_address3,
-        column.ent_address4-> ent.ent_address4,
-        column.ent_address5-> ent.ent_address5,
-        column.ent_postcode-> ent.ent_postcode,
-        column.legalstatus-> ent.legalstatus,
-        column.paye_jobs-> ent.paye_jobs,
-        column.employees-> ent.employees,
-        column.standard_vat_turnover-> ent.standard_vat_turnover,
-        column.num_unique_payerefs-> ent.num_unique_payerefs,
-        column.num_unique_vatrefs-> ent.num_unique_vatrefs,
-        column.contained_rep_vat_turnover-> ent.contained_rep_vat_turnover
+        column.ent_tradingstyle -> ent.ent_tradingstyle,
+        column.ent_address1 -> ent.ent_address1,
+        column.ent_address2 -> ent.ent_address2,
+        column.ent_address3 -> ent.ent_address3,
+        column.ent_address4 -> ent.ent_address4,
+        column.ent_address5 -> ent.ent_address5,
+        column.ent_postcode -> ent.ent_postcode,
+        column.legalstatus -> ent.legalstatus,
+        column.paye_jobs -> ent.paye_jobs,
+        column.employees -> ent.employees,
+        column.standard_vat_turnover -> ent.standard_vat_turnover,
+        column.num_unique_payerefs -> ent.num_unique_payerefs,
+        column.num_unique_vatrefs -> ent.num_unique_vatrefs,
+        column.contained_rep_vat_turnover -> ent.contained_rep_vat_turnover
       ).where.eq(column.ref_period, ent.ref_period).and.eq(column.entref, ent.entref)
     }.update.apply()
     ent

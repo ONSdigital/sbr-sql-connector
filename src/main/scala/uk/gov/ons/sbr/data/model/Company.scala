@@ -1,7 +1,10 @@
 package uk.gov.ons.sbr.data.model
 
+import play.api.libs.json.{JsObject, JsValue, Json, OWrites}
 import scalikejdbc._
-import uk.gov.ons.sbr.data.model.LegalUnit.{autoSession, u}
+
+// for JSON with >22 case class fields
+import ai.x.play.json.Jsonx
 
 case class Company(
                     ref_period: Long,
@@ -73,6 +76,30 @@ case class Company(
 }
 
 object Company extends SQLSyntaxSupport[Company] {
+
+  // This bit will allow us to convert to/from JSON (need to use Jsonx for >22 fields)
+  implicit val companyFormat = Jsonx.formatCaseClass[Company]
+
+  // This stuff is for converting to StatUnits
+  val excludeFields: Seq[String] = List("companynumber", "ubrn", "ref_period")
+
+  def variablesToMap(obj: Company): Map[String, String] = {
+    // convert to JSON
+    val objJson: JsValue = Json.toJson(obj)
+    // now convert to Map of String -> JsValue
+    val objMap: Map[String, JsValue] = objJson match {
+      case JsObject(fields) => fields.toMap
+      case _ => Map.empty[String, JsValue]
+    }
+    // convert to Map of String -> String and exclude key fields
+    val varMap: Map[String, String] =
+      for {
+        (k, v) <- objMap
+        if (!(excludeFields.contains(k)))
+      } yield (k, v.as[String])
+    varMap
+  }
+
   // This is where the DB voodoo happens
 
   override val tableName = "ch_2500"

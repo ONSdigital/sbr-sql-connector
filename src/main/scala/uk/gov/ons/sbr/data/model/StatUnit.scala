@@ -1,5 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
+import play.api.libs.json.Json
 import uk.gov.ons.sbr.data.model.UnitType.UnitType
 
 case class StatUnit(refPeriod: Long,
@@ -10,6 +11,8 @@ case class StatUnit(refPeriod: Long,
                     links: Option[StatUnitLinks] = None)
 
 object StatUnit {
+  // This bit will allow us to convert to/from JSON
+  implicit val suWrites = Json.writes[Enterprise]
 
   def apply(obj: Enterprise): StatUnit = {
     // convert an Enterprise to a StatUnit of type ENT
@@ -19,16 +22,30 @@ object StatUnit {
   }
 
   def apply(obj: LegalUnit): StatUnit = {
-    // convert an Enterprise to a StatUnit of type CH
+    // convert to a StatUnit of type LEU
     StatUnit(refPeriod = obj.ref_period, key = obj.ubrn.toString,unitType = UnitType.LEU,
       variables = LegalUnit.variablesToMap(obj)
     )
   }
 
- /* def apply(obj: Company): StatUnit = {
-    // convert an Enterprise to a StatUnit of type CH
+ def apply(obj: Company): StatUnit = {
+    // convert to a StatUnit of type CH
     StatUnit(refPeriod = obj.ref_period, key = obj.companynumber,unitType = UnitType.CH,
       variables = Company.variablesToMap(obj)
     )
-  }*/
+  }
+
+  def apply(obj: Paye): StatUnit = {
+    // convert to a StatUnit of type PAYE
+    StatUnit(refPeriod = obj.ref_period, key = obj.payeref,unitType = UnitType.PAYE,
+      variables = Paye.variablesToMap(obj)
+    )
+  }
+
+  def apply(obj: Vat): StatUnit = {
+    // convert to a StatUnit of type VAT
+    StatUnit(refPeriod = obj.ref_period, key = obj.vatref,unitType = UnitType.VAT,
+      variables = Vat.variablesToMap(obj)
+    )
+  }
 }
