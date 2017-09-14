@@ -7,7 +7,7 @@ import uk.gov.ons.sbr.data.model.UnitType._
 
 case class LeuChildren(ref_period: Long,
                        ubrn: Long,
-                       companyNo: Option[String],git status
+                       companyNo: Option[String],
                        payeRefs: List[String] = Nil,
                        vatRefs: List[String] = Nil)
 {

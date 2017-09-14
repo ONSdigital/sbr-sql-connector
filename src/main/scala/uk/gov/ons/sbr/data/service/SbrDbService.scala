@@ -9,7 +9,6 @@ import uk.gov.ons.sbr.data.model.{StatUnit, UnitLinks}
 @Singleton
 class SbrDbService(dbConfig: Config) {
 
-
   // Set up DB...
   val db = new SbrDatabase(dbConfig)
   val initSchema: Boolean = dbConfig.getBoolean("init")
@@ -41,7 +40,6 @@ class SbrDbService(dbConfig: Config) {
   def defaultRefPeriod: Long = 201706
 
   // UnitLinks only contain IDs - this is where you search for an ID but do not yet know the unit type
-
   def getUnitLinks(ref_period: Long, unitId: String): Seq[UnitLinks] = {
     linksDao.findById(ref_period, unitId)
   }
@@ -51,7 +49,6 @@ class SbrDbService(dbConfig: Config) {
   }
 
   // The StatUnit methods are for fetching specific objects (Ent, LEU, CH, PAYE, VAT) as SU hieraarchies
-
   def getEnterpriseAsStatUnit(ref_period: Long, entref: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this Enterprise
     // Get the Ent record first...
@@ -62,6 +59,11 @@ class SbrDbService(dbConfig: Config) {
     val leuSUs: Seq[StatUnit] = leus.map { x => getLegalUnitAsStatUnit(x.ref_period, x.ubrn) }.flatten
     // Add LEUs (if any) to children
     entSU.map { e => e.children ++= leuSUs; e }
+  }
+
+  // Update Enterprise (Stat Unit)
+  def updateEnterpriseStatUnit(statUnit: StatUnit): StatUnit = {
+    entDao.updateEntStatUnit(statUnit)
   }
 
   // Need proper logic for deciding default Ref Period

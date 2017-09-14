@@ -8,8 +8,6 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
 
   behavior of "SbrDbServiceTest"
 
-
-
   it should "insert new Ent and Legal Unit with Company/PAYE/VAT, and query LEU correctly as Stat Unit hierarchy" in {
 
     val entref = 100L
@@ -212,6 +210,32 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     val fetched: Option[StatUnit] = dbService.getEnterpriseAsStatUnit(entref)
 
     fetched shouldBe None
+  }
+
+  it should "insert new Enterprise and update it correctly via StatUnit" in {
+
+    val entref = 101L
+    val refperiod = 201706
+
+    // assume insert works because we test it elsewhere
+    val ent = Enterprise(ref_period = refperiod, entref = entref, ent_tradingstyle = Option(s"Entity $entref"))
+    val inserted: Enterprise = entDao.insert(ent)
+
+    // update record via StatUnit
+    val entSU = StatUnit(inserted)
+    // change name in variables Map (immutable by default so a bit of a bodge)
+    val newName = ent.ent_tradingstyle.map(_ + " MODIFIED")
+    var newVars: Map[String, String] = entSU.variables + ("ent_tradingstyle" -> newName.get)
+    val updatedSU =  entSU.copy(variables = newVars)
+
+    // Write the Update to DB
+    dbService.updateEnterpriseStatUnit(updatedSU)
+
+    // see if we can fetch correct updated name from DB (DAO query works - tested elsewhere)
+    val fetched = entDao.getEnterprise(refperiod, entref)
+    val fetchedName: Option[String] = fetched.map(_.ent_tradingstyle).flatten
+
+    fetchedName shouldBe newName
   }
 
   // UnitLinks is query-only in the Alpha
