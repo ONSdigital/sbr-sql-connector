@@ -52,6 +52,8 @@ object DbSchema {
 
   def loadDataIntoSchema(sampleDir: String) = {
 
+    println(s"*** Loading data from $sampleDir....")
+
     enterpriseTable.loadFromSqlFile(s"$sampleDir/ent_2500_data.sql")
 
     legalUnitTable.loadFromSqlFile(s"$sampleDir/leu_2500_data.sql")
