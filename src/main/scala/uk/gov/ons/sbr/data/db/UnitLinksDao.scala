@@ -19,5 +19,4 @@ object UnitLinksDao extends SbrDao[UnitLinks] {
 
   override def count(): Long = UnitLinks.countAll()
 
-
 }

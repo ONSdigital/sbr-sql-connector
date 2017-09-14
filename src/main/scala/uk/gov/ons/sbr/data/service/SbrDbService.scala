@@ -4,7 +4,7 @@ import com.typesafe.config._
 import uk.gov.ons.sbr.data.db._
 import javax.inject.Singleton
 
-import uk.gov.ons.sbr.data.model.StatUnit
+import uk.gov.ons.sbr.data.model.{StatUnit, UnitLinks}
 
 @Singleton
 class SbrDbService(dbConfig: Config) {
@@ -40,6 +40,18 @@ class SbrDbService(dbConfig: Config) {
   // Ony use this hard-coded value for demo!!!
   def defaultRefPeriod: Long = 201706
 
+  // UnitLinks only contain IDs - this is where you search for an ID but do not yet know the unit type
+
+  def getUnitLinks(ref_period: Long, unitId: String): Seq[UnitLinks] = {
+    linksDao.findById(ref_period, unitId)
+  }
+
+  def getUnitLinks(unitId: String): Seq[UnitLinks] = {
+    getUnitLinks(defaultRefPeriod, unitId: String)
+  }
+
+  // The StatUnit methods are for fetching specific objects (Ent, LEU, CH, PAYE, VAT) as SU hieraarchies
+
   def getEnterpriseAsStatUnit(ref_period: Long, entref: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this Enterprise
     // Get the Ent record first...
@@ -54,7 +66,6 @@ class SbrDbService(dbConfig: Config) {
 
   // Need proper logic for deciding default Ref Period
   def getEnterpriseAsStatUnit(entref: Long): Option[StatUnit] = getEnterpriseAsStatUnit(defaultRefPeriod, entref)
-
 
   def getLegalUnitAsStatUnit(ref_period: Long, ubrn: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this LEU
