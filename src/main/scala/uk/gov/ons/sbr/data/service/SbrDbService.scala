@@ -61,13 +61,12 @@ class SbrDbService(dbConfig: Config) {
     entSU.map { e => e.children ++= leuSUs; e }
   }
 
+  def getEnterpriseAsStatUnit(entref: Long): Option[StatUnit] = getEnterpriseAsStatUnit(defaultRefPeriod, entref)
+
   // Update Enterprise (Stat Unit)
   def updateEnterpriseStatUnit(statUnit: StatUnit): StatUnit = {
     entDao.updateEntStatUnit(statUnit)
   }
-
-  // Need proper logic for deciding default Ref Period
-  def getEnterpriseAsStatUnit(entref: Long): Option[StatUnit] = getEnterpriseAsStatUnit(defaultRefPeriod, entref)
 
   def getLegalUnitAsStatUnit(ref_period: Long, ubrn: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this LEU
@@ -98,13 +97,11 @@ class SbrDbService(dbConfig: Config) {
 
   def getCompanyAsStatUnit(companyno: String): Option[StatUnit] = getCompanyAsStatUnit(defaultRefPeriod, companyno)
 
-
   def getPayeAsStatUnit(ref_period: Long, payeref: String): Option[StatUnit] = {
     payeDao.getPaye(ref_period, payeref).map(StatUnit(_))
   }
 
   def getPayeAsStatUnit(payeref: String): Option[StatUnit] = getPayeAsStatUnit(defaultRefPeriod, payeref)
-
 
   def getVatAsStatUnit(ref_period: Long, vatref: String): Option[StatUnit] = {
     vatDao.getVat(ref_period, vatref).map(StatUnit(_))

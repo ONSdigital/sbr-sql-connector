@@ -59,17 +59,17 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
 
   def apply(e: SyntaxProvider[LegalUnit])(rs: WrappedResultSet): LegalUnit = apply(e.resultName)(rs)
 
-  def apply(e: ResultName[LegalUnit])(rs: WrappedResultSet): LegalUnit = new LegalUnit(
-    rs.long("ref_period"),
-    rs.long("ubrn"),
-    rs.stringOpt("businessname"),
-    rs.stringOpt("postcode"),
-    rs.stringOpt("industrycode"),
-    rs.stringOpt("legalstatus"),
-    rs.stringOpt("tradingstatus"),
-    rs.stringOpt("turnover"),
-    rs.stringOpt("employmentbands"),
-    rs.long("entref")
+  def apply(data: ResultName[LegalUnit])(rs: WrappedResultSet): LegalUnit = new LegalUnit(
+    rs.long(data.ref_period),
+    rs.long(data.ubrn),
+    rs.stringOpt(data.businessname),
+    rs.stringOpt(data.postcode),
+    rs.stringOpt(data.industrycode),
+    rs.stringOpt(data.legalstatus),
+    rs.stringOpt(data.tradingstatus),
+    rs.stringOpt(data.turnover),
+    rs.stringOpt(data.employmentbands),
+    rs.long(data.entref)
   )
 
   // Seems to make it easier to use SQL DSL below

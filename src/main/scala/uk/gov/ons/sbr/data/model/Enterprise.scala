@@ -93,24 +93,27 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
 
   def apply(e: SyntaxProvider[Enterprise])(rs: WrappedResultSet): Enterprise = apply(e.resultName)(rs)
 
-  def apply(e: ResultName[Enterprise])(rs: WrappedResultSet): Enterprise = new Enterprise(
-    rs.long("ref_period"),
-    rs.long("entref"),
-    rs.stringOpt("ent_tradingstyle"),
-    rs.stringOpt("ent_address1"),
-    rs.stringOpt("ent_address2"),
-    rs.stringOpt("ent_address3"),
-    rs.stringOpt("ent_address4"),
-    rs.stringOpt("ent_address5"),
-    rs.stringOpt("ent_postcode"),
-    rs.stringOpt("legalstatus"),
-    rs.stringOpt("paye_jobs"),
-    rs.stringOpt("employees"),
-    rs.stringOpt("standard_vat_turnover"),
-    rs.stringOpt("num_unique_payerefs"),
-    rs.stringOpt("num_unique_vatrefs"),
-    rs.stringOpt("contained_rep_vat_turnover")
-  )
+  def apply(e: ResultName[Enterprise])(rs: WrappedResultSet): Enterprise = {
+    // SQLSyntax and ResultName give us some voodoo on reading results here
+    new Enterprise(
+      rs.long(e.ref_period),
+      rs.long(e.entref),
+      rs.stringOpt(e.ent_tradingstyle),
+      rs.stringOpt(e.ent_address1),
+      rs.stringOpt(e.ent_address2),
+      rs.stringOpt(e.ent_address3),
+      rs.stringOpt(e.ent_address4),
+      rs.stringOpt(e.ent_address5),
+      rs.stringOpt(e.ent_postcode),
+      rs.stringOpt(e.legalstatus),
+      rs.stringOpt(e.paye_jobs),
+      rs.stringOpt(e.employees),
+      rs.stringOpt(e.standard_vat_turnover),
+      rs.stringOpt(e.num_unique_payerefs),
+      rs.stringOpt(e.num_unique_vatrefs),
+      rs.stringOpt(e.contained_rep_vat_turnover)
+    )
+  }
 
   // Seems to make it easier to use SQL DSL below
   val e = Enterprise.syntax("e")

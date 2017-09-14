@@ -17,7 +17,6 @@ trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
   // Get implicit session for voodoo with DB operations below
   implicit val session = dbService.session
 
-
   // Use same entity Repo objects for all tests
   val entDao = dbService.entDao
   val unitDao = dbService.unitDao

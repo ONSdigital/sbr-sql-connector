@@ -8,8 +8,6 @@ import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
 trait SbrDbTable {
 
-  def dropTable(implicit session: DBSession = autoSession)
-
   def createTable(implicit session: DBSession = autoSession)
 
   def loadFromSqlFile(insertsFile: String)(implicit session: DBSession = autoSession) = {

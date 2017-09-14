@@ -29,13 +29,13 @@ object UnitLinks extends SQLSyntaxSupport[UnitLinks] {
 
   def apply(e: SyntaxProvider[UnitLinks])(rs: WrappedResultSet): UnitLinks = apply(e.resultName)(rs)
 
-  def apply(e: ResultName[UnitLinks])(rs: WrappedResultSet): UnitLinks = new UnitLinks(
-    rs.long("ref_period"),
-    rs.string("unit_type"),
-    rs.string("unit_id"),
-    rs.longOpt("p_ent"),
-    rs.longOpt("p_leu"),
-    rs.stringOpt("children")
+  def apply(data: ResultName[UnitLinks])(rs: WrappedResultSet): UnitLinks = new UnitLinks(
+    rs.long(data.ref_period),
+    rs.string(data.unitType),
+    rs.string(data.unitId),
+    rs.longOpt(data.pEnt),
+    rs.longOpt(data.pLeu),
+    rs.stringOpt(data.children)
   )
 
   // Seems to make it easier to use SQL DSL below
@@ -59,10 +59,10 @@ object UnitLinks extends SQLSyntaxSupport[UnitLinks] {
 
   def save(unitLink: UnitLinks)(implicit session: DBSession = autoSession): UnitLinks = {
     withSQL {
-      update(UnitLinks as lnk).set(
-        lnk.pEnt -> unitLink.pEnt,
-        lnk.pLeu -> unitLink.pLeu,
-        lnk.children -> unitLink.children
+      update(UnitLinks).set(
+        column.pEnt -> unitLink.pEnt,
+        column.pLeu -> unitLink.pLeu,
+        column.children -> unitLink.children
       ).where.eq(column.ref_period, unitLink.ref_period)
         .and.eq(column.unitType, unitLink.unitType)
         .and.eq(column.unitId, unitLink.unitId)
@@ -73,9 +73,9 @@ object UnitLinks extends SQLSyntaxSupport[UnitLinks] {
 
   def findByKey(ref_period: Long, unitType: String, unitId: String)(implicit session: DBSession = autoSession): Option[UnitLinks] = withSQL {
     select.from(UnitLinks as lnk)
-      .where.eq(lnk.ref_period, ref_period)
-      .and.eq(lnk.unitType, unitType)
-      .and.eq(lnk.unitId, unitId)
+      .where.eq(column.ref_period, ref_period)
+      .and.eq(column.unitType, unitType)
+      .and.eq(column.unitId, unitId)
   }.map(UnitLinks(lnk)).single.apply()
 
   def findById(ref_period: Long, unitId: String)(implicit session: DBSession = autoSession): List[UnitLinks] = withSQL {
@@ -83,14 +83,14 @@ object UnitLinks extends SQLSyntaxSupport[UnitLinks] {
   }.map(UnitLinks(lnk)).list.apply()
 
   def destroy(ref_period: Long, unitType: String, unitId: String)(implicit session: DBSession = autoSession): Unit = withSQL {
-    deleteFrom(UnitLinks as lnk)
-      .where.eq(lnk.ref_period, ref_period)
-      .and.eq(lnk.unitType, unitType)
+    deleteFrom(UnitLinks)
+      .where.eq(column.ref_period, ref_period)
+      .and.eq(column.unitType, unitType)
       .and.eq(lnk.unitId, unitId)
   }.update.apply()
 
   def destroyAll()(implicit session: DBSession = autoSession): Unit = withSQL {
-    deleteFrom(UnitLinks as lnk)
+    deleteFrom(UnitLinks)
   }.update.apply()
 
   def countAll()(implicit session: DBSession = autoSession): Long = withSQL {

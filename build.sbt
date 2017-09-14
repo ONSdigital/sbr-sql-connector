@@ -34,6 +34,9 @@ libraryDependencies += "javax.inject" % "javax.inject" % "1"
 // https://mvnrepository.com/artifact/com.h2database/h2
 libraryDependencies += "com.h2database" % "h2" % Versions.h2 % "test"
 
+// https://mvnrepository.com/artifact/org.postgresql/postgresql
+libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
+
 // ScalikeJDBC for easy SQL access:  http://scalikejdbc.org/
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc"         % Versions.scalike,
