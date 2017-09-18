@@ -37,7 +37,7 @@ case class Children(leu: Option[Seq[String]] = None,
 }
 
 object Children {
-  // This bit will allow us to convert to/from JSON
+  // This bit will allow us to convert to/from JSON as part of StatUnitLinks construction
   implicit val childrenWrites = Json.writes[Children]
   implicit val childrenReads = Json.reads[Children]
 

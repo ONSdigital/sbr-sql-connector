@@ -136,7 +136,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     Json.toJson(kidz) shouldBe expected
   }
 
-  it should "convert data to Map correctly via asMap()" in {
+  it should "convert full set of data to Map correctly via asMap()" in {
      // Make the Children object
     val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 

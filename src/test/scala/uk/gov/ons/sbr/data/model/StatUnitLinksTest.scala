@@ -41,7 +41,7 @@ class StatUnitLinksTest extends FlatSpec with Matchers{
     // expected children - (unit ID -> unit Type) to allow for multiple PAYEs etc.
     val expected = Map("PAYE0001" -> "PAYE", "PAYE0002" -> "PAYE", "VAT0001" -> "VAT", "VAT0002" -> "VAT")
 
-    // actual children
+    // actual children in StatUnitLinks
     val sul = StatUnitLinks(ul)
 
     sul.children should contain theSameElementsAs (expected)

@@ -2,8 +2,6 @@ package uk.gov.ons.sbr.data.model
 
 import play.api.libs.json._
 
-import scala.util.{Failure, Success, Try}
-
 case class StatUnitLinks(refPeriod: Long,
                          key: String,
                          unitType: String,
@@ -26,6 +24,7 @@ object StatUnitLinks {
       .filter((v) => v._2 > 0)
       .map((v) => (v._1 -> v._2.toString))
 
+    // Use our JSON-enabled Children class to handle this conversion
     val children: Children = Json.parse(obj.children.getOrElse("{}")).as[Children]
 
     // Build SUL
