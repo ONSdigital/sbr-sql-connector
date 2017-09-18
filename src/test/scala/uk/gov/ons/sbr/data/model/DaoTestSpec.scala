@@ -12,7 +12,7 @@ trait DaoTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
   val config = ConfigFactory.load()
   val dbConfig = config.getConfig("db").getConfig("test")
   // Start DbService with this config
-  val dbService = new SbrDbService(dbConfig)
+  val dbService = new SbrDbService(Some(dbConfig))
 
   // Get implicit session for voodoo with DB operations below
   implicit val session = dbService.session

@@ -7,8 +7,8 @@ scalaVersion := "2.11.11"
 val Versions = new {
   val config = "1.3.1"
   val h2 = "1.4.196"
-  val play = "2.6.3"
-  val playJsonExt = "0.10.0" // 0.10.0 for Play 2.6, 0.9.0 for Play 2.5
+  val play = "2.5.14"
+  val playJsonExt = "0.9.0" // 0.10.0 for Play 2.6, 0.9.0 for Play 2.5
   val qos = "1.2.3"
   val scalike = "3.0.2"
   val slick = "3.2.1"
@@ -21,7 +21,7 @@ libraryDependencies += "com.typesafe" % "config" % Versions.config
 // Use Play JSON parsers
 libraryDependencies += "com.typesafe.play" %% "play-json" % Versions.play % "provided"
 
-// need this to use JSON with >22 case class fields
+// Need this to use JSON with >22 case class fields
 libraryDependencies += "ai.x" %% "play-json-extensions" % Versions.playJsonExt
 
 // Change this to another test framework if you prefer
@@ -41,7 +41,6 @@ libraryDependencies += "org.postgresql" % "postgresql" % "42.1.4"
 libraryDependencies ++= Seq(
   "org.scalikejdbc" %% "scalikejdbc"         % Versions.scalike,
   "org.scalikejdbc" %% "scalikejdbc-config"  % Versions.scalike,
-  "org.scalikejdbc" %% "scalikejdbc"       % Versions.scalike,
   "org.scalikejdbc" %% "scalikejdbc-test"   % Versions.scalike  % "test",
   "ch.qos.logback"  %  "logback-classic"    % Versions.qos
 )

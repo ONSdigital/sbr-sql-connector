@@ -7,9 +7,14 @@ import javax.inject.Singleton
 import uk.gov.ons.sbr.data.model.{StatUnit, UnitLinks}
 
 @Singleton
-class SbrDbService(dbConfig: Config) {
+class SbrDbService(dbConfigOpt: Option[Config]) {
 
   // Set up DB...
+  // Did we recevie a config?
+  val dbConfig = dbConfigOpt match {
+    case Some(cfg: Config) => cfg
+    case None =>   ConfigFactory.load().getConfig("db").getConfig("default")
+  }
   val db = new SbrDatabase(dbConfig)
   val initSchema: Boolean = dbConfig.getBoolean("init")
   val loadSample: Boolean = dbConfig.getBoolean("load")
