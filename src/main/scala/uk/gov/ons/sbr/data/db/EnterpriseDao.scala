@@ -19,7 +19,7 @@ object EnterpriseDao extends SbrDao[Enterprise]{
     val leus: Option[Seq[String]] = LegalUnitDao.getLegalUnitsForEnterprise(ref_period, ubrn).map(_.entref.toString)
     match {case Nil => None
       case  xs: Seq[String] => Some(xs)}
-    Children(legalunits = leus)
+    Children(leu = leus)
   }
 
   // general DAO methods

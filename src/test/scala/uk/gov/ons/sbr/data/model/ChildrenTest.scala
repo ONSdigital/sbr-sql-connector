@@ -26,7 +26,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Construct Children
     val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 
-    val expected = Json.parse("""{"legalunits":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"leu":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -35,7 +35,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Make the Children object
     val expected = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 
-    val jsonStr = Json.parse("""{"legalunits":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val jsonStr = Json.parse("""{"leu":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     val result: Children = jsonStr.as[Children]
 
@@ -48,7 +48,7 @@ class ChildrenTest extends FlatSpec with Matchers{
    // Construct Children
     val expected = Children(Option(List(ubrn.toString)), None, None, None)
 
-    val jsonStr = Json.parse("""{"legalunits":["1234"]}""")
+    val jsonStr = Json.parse("""{"leu":["1234"]}""")
 
     val result: Children = jsonStr.as[Children]
 
