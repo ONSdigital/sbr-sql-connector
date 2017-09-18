@@ -23,7 +23,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when every field is populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 
     val expected = Json.parse("""{"legalunits":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
@@ -45,7 +45,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "parse JSON correctly to Children object when only LEU is populated" in {
 
-   // Make the LeuCHildren object
+   // Construct Children
     val expected = Children(Option(List(ubrn.toString)), None, None, None)
 
     val jsonStr = Json.parse("""{"legalunits":["1234"]}""")
@@ -58,7 +58,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU is NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, Some(coNo), Some(payes), Some(vats))
 
     val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
@@ -68,7 +68,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU and CH is NOT populated" in {
 
-     // Make the LeuCHildren object
+     // Construct Children
     val kidz = Children(None, None, Some(payes), Some(vats))
 
     val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
@@ -78,7 +78,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU and CH, PAYE are NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, None, None, Some(vats))
 
     val expected = Json.parse("""{"vat":["VAT0001","VAT0002"]}""")
@@ -88,7 +88,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU and CH, VAT are NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, None, Some(payes), None)
 
     val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"]}""")
@@ -98,7 +98,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU, CH, PAYE, VAT are NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, None, None, None)
 
     val expected = Json.parse("""{}""")
@@ -108,7 +108,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU and PAYE is NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, Some(coNo), None, Some(vats))
 
     val expected = Json.parse("""{"ch":"COMPANY0001","vat":["VAT0001","VAT0002"]}""")
@@ -118,7 +118,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU and VAT is NOT populated" in {
 
-    // Make the LeuCHildren object
+    // Construct Children
     val kidz = Children(None, Some(coNo), Some(payes), None)
 
     val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"]}""")
@@ -128,7 +128,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "construct JSON correctly when LEU, PAYE and VAT are NOT populated" in {
 
-     // Make the LeuCHildren object
+     // Construct Children
     val kidz = Children(None, Some(coNo), None, None)
 
     val expected = Json.parse("""{"ch":"COMPANY0001"}""")
