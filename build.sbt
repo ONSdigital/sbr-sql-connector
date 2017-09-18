@@ -2,7 +2,7 @@ name := """sbr-sql-connector"""
 
 version := "1.0"
 
-scalaVersion := "2.12.3"
+scalaVersion := "2.11.11"
 
 val Versions = new {
   val config = "1.3.1"
