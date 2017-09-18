@@ -143,7 +143,7 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
 
   // Need to get child objects for an LEU
 
-  def getChildren(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): LeuChildren = {
+  def getLeuChildren(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): LeuChildren = {
 
     // Get Company if any - Should only be ONE CH entry for an LEU
     val ch: Option[String] = CompanyDao.getCompaniesForLegalUnit(ref_period, ubrn).map(_.companynumber).headOption
@@ -155,6 +155,23 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
     val vats = VatDao.getVatsForLegalUnit(ref_period, ubrn).map(_.vatref)
 
     LeuChildren(ref_period, ubrn, ch, payes, vats)
+  }
+
+  def getChildren(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): Children = {
+    // Get Company if any - Should only be ONE CH entry for an LEU
+    val ch: Option[String] = CompanyDao.getCompaniesForLegalUnit(ref_period, ubrn).map(_.companynumber).headOption
+
+    // Get PAYEs if any
+    val payes: Option[Seq[String]] = PayeDao.getPayesForLegalUnit(ref_period, ubrn).map(_.payeref)
+    match {case Nil => None
+      case  xs: Seq[String] => Some(xs)}
+
+    // Get VATs if any
+    val vats: Option[Seq[String]] = VatDao.getVatsForLegalUnit(ref_period, ubrn).map(_.vatref)
+      match {case Nil => None
+      case  xs: Seq[String] => Some(xs)}
+    // Children object can have LEUs, but we do not need them here.
+    Children(ch = ch, paye = payes, vat = vats)
   }
 
   def getAsStatUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): Option[StatUnit] = {

@@ -1,8 +1,6 @@
 package uk.gov.ons.sbr.data.model
 
 import play.api.libs.json.Json
-import uk.gov.ons.sbr.data.model
-import uk.gov.ons.sbr.data.model.UnitType._
 
 
 case class LeuChildren(ref_period: Long,

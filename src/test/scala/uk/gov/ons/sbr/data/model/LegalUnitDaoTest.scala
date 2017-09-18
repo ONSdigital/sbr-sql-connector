@@ -190,7 +190,7 @@ class LegalUnitDaoTest extends FlatSpec with DaoTest with Matchers {
     vatDao.insert(vat2)
 
     // Now see if we can query it all back
-    val fetched: LeuChildren = unitDao.getChildren(refperiod, ubrn)
+    val fetched: LeuChildren = unitDao.getLeuChildren(refperiod, ubrn)
 
     // compare the Map for the LEU children
     val expected: Map[String, String] = Map(coNo -> CH.toString,

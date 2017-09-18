@@ -19,16 +19,33 @@ class StatUnitLinksTest extends FlatSpec with Matchers{
     val ul = UnitLinks(refperiod, ut, s"$cono", Option(entref), Option(ubrn), Option(children) )
 
     // expected parents
-    val expected = Map((UnitType.ENT -> entref.toString),(UnitType.LEU -> ubrn.toString))
+    val expected = Map((UnitType.ENT.toString -> entref.toString),(UnitType.LEU.toString -> ubrn.toString))
 
     // actual parents
     val sul = StatUnitLinks(ul)
-
-    println(s"$sul")
 
     sul.parents should contain theSameElementsAs (expected)
 
   }
 
+  it should "convert UnitLinks children correctly to a Map" in {
+
+    val refperiod = 201708 // not default period
+    val ut = "CH"
+    val entref = 1000L
+    val ubrn = 2000L
+    val cono = "COMPANY123"
+    val children = """[{"PAYE":"PAYE123", "VAT":"VAT123"}]"""
+    val ul = UnitLinks(refperiod, ut, s"$cono", Option(entref), Option(ubrn), Option(children) )
+
+    // expected children
+    val expected = Map("PAYE123" -> "PAYE", "VAT123" -> "VAT")
+
+    // actual children
+    val sul = StatUnitLinks(ul)
+
+    sul.children should contain theSameElementsAs (expected)
+
+  }
 
 }

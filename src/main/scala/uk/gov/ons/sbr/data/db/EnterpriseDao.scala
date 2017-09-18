@@ -1,6 +1,6 @@
 package uk.gov.ons.sbr.data.db
 
-import uk.gov.ons.sbr.data.model.{Enterprise, StatUnit}
+import uk.gov.ons.sbr.data.model.{Children, Enterprise, StatUnit}
 
 object EnterpriseDao extends SbrDao[Enterprise]{
 
@@ -12,6 +12,14 @@ object EnterpriseDao extends SbrDao[Enterprise]{
     val ent = Enterprise(statUnit)
     val savedEnt: Enterprise = update(ent)
     StatUnit(savedEnt)
+  }
+
+  def getChildren(ref_period: Long, ubrn: Long): Children = {
+    // Get LEUs if any
+    val leus: Option[Seq[String]] = LegalUnitDao.getLegalUnitsForEnterprise(ref_period, ubrn).map(_.entref.toString)
+    match {case Nil => None
+      case  xs: Seq[String] => Some(xs)}
+    Children(legalunits = leus)
   }
 
   // general DAO methods

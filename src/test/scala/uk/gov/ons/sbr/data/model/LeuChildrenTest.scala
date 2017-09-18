@@ -1,7 +1,8 @@
 package uk.gov.ons.sbr.data.model
 
 import org.scalatest.{FlatSpec, Matchers}
-import uk.gov.ons.sbr.data.model.UnitType._
+import uk.gov.ons.sbr.data.model.UnitType.{CH, PAYE, VAT}
+
 
 class LeuChildrenTest extends FlatSpec with Matchers{
 
@@ -29,8 +30,8 @@ class LeuChildrenTest extends FlatSpec with Matchers{
     val kidz = LeuChildren(refperiod, ubrn, Some(coNo), payes, vats)
 
     val expected: Map[String, String] = Map("COMPANY0001" -> CH.toString,
-                                              "PAYE0002" -> PAYE.toString, "PAYE0001" -> PAYE.toString,
-                                              "VAT0001" -> VAT.toString,  "VAT0002" -> VAT.toString)
+      "PAYE0002" -> PAYE.toString, "PAYE0001" -> PAYE.toString,
+      "VAT0001" -> VAT.toString,  "VAT0002" -> VAT.toString)
 
     kidz.asMap() should contain theSameElementsAs (expected)
   }

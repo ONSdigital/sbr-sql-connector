@@ -1,6 +1,7 @@
 package uk.gov.ons.sbr.data.model
 
 import scalikejdbc._
+import uk.gov.ons.sbr.data.db.LegalUnitDao
 
 // Use JSOn to convert class -> JSON -> Map easily
 import play.api.libs.json._
@@ -186,6 +187,4 @@ object Enterprise extends SQLSyntaxSupport[Enterprise] {
   def getAsStatUnit(ref_period: Long, entref: Long)(implicit session: DBSession = autoSession): Option[StatUnit] = {
     find(ref_period, entref)(session).map(StatUnit(_))
   }
-
-
 }

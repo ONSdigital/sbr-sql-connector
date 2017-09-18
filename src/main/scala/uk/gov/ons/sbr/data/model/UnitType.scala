@@ -15,6 +15,5 @@ object UnitType extends Enumeration  {
    */
   type UnitType = Value
   val ENT, LEU, CH, PAYE, VAT = Value
-
 }
 
