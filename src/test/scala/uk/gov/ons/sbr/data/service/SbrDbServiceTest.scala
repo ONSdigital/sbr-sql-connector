@@ -238,9 +238,9 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     fetchedName shouldBe newName
   }
 
-  // UnitLinks is query-only in the Alpha
+  // StatUnitLinks is query-only in the Alpha
 
-  it should "insert a Unit Links and return data for Ref Period + ID" in {
+  it should "insert a Unit Links and return data as StatUnitLinks for Ref Period + ID" in {
 
     val refperiod = 201708 // not default period
 
@@ -264,16 +264,16 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     }
 
     // Query the records back
-    val results = dbService.getUnitLinks(refperiod, searchId)
+    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinks(refperiod, searchId)
 
-    val expected = uts.map{ut =>  UnitLinks(refperiod, ut, searchId)}
+    val expected: Seq[StatUnitLinks] = uts.map{ ut =>  UnitLinks(refperiod, ut, searchId)}.map(StatUnitLinks(_))
 
     // Check the results are correct
     results should contain theSameElementsAs expected
 
   }
 
-  it should "insert Unit Links with default Ref Period and return data for ID" in {
+  it should "insert Unit Links with default Ref Period and return dataas StatUnitLinks  for ID" in {
 
     val refperiod = dbService.defaultRefPeriod
 
@@ -297,16 +297,16 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     }
 
     // Query the records back without providing Ref Period
-    val results = dbService.getUnitLinks(searchId)
+    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinks(searchId)
 
-    val expected = uts.map{ut =>  UnitLinks(refperiod, ut, searchId)}
+    val expected: Seq[StatUnitLinks] = uts.map{ ut =>  UnitLinks(refperiod, ut, searchId)}.map(StatUnitLinks(_))
 
     // Check the results are correct
     results should contain theSameElementsAs expected
 
   }
 
-  it should "insert Unit Links with non-default Ref Period and return no data for ID" in {
+  it should "insert Unit Links with non-default Ref Period and return no data for ID only" in {
 
     val refperiod = dbService.defaultRefPeriod + 1
 
@@ -330,7 +330,7 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     }
 
     // Query the records back without providing Ref Period
-    val results: Seq[UnitLinks] = dbService.getUnitLinks(searchId)
+    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinks(searchId)
 
     val expected = Nil
 
