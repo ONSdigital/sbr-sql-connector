@@ -36,7 +36,10 @@ pipeline {
             steps {
                 colourText("info", "Unit test for ${env.BUILD_ID} on ${env.JENKINS_URL} on branch ${env.BRANCH_NAME}")
 
-                sh "$SBT test"
+            sh '''
+                $SBT clean compile "project api" universal:packageBin coverage test coverageReport
+                '''
+
             }
         }
         stage('Integration Test') {
@@ -49,8 +52,8 @@ pipeline {
             steps {
                colourText("info", "Build assembly for ${env.BUILD_ID} on ${env.JENKINS_URL} on branch ${env.BRANCH_NAME}")
                 sh '''
-                                $SBT clean compile "project api" universal:packageBin coverage test coverageReport
-                                '''
+                   $SBT assembly
+                '''
             }
         }
 
