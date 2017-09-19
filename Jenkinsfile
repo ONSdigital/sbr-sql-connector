@@ -102,7 +102,11 @@ pipeline {
          stage ('Package') {
              agent any
              when {
-                 branch "master"
+                 anyOf {
+                     branch "develop"
+                     branch "release"
+                     branch "master"
+                 }
              }
              steps {
                  colourText("success", 'Packaging in progress...')
@@ -111,11 +115,11 @@ pipeline {
                      sh '$SBT assembly'
                  }
              }
-
          }
 
 
          stage('Integration Tests') {
+             agent any
              when {
                  anyOf {
                      branch "develop"
@@ -155,7 +159,6 @@ pipeline {
         }
     }
 }
-
 
 
 
