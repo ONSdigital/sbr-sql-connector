@@ -19,7 +19,6 @@ pipeline {
                 script {
                     version = '1.0.' + env.BUILD_NUMBER
                     currentBuild.displayName = version
-                    // currentBuild.result = "SUCCESS"
                     env.NODE_STAGE = "Checkout"
                 }
             }
@@ -50,6 +49,7 @@ pipeline {
         }
         stage('Assembly') {
             steps {
+               colourText("info", "Build assembly for ${env.BUILD_ID} on ${env.JENKINS_URL} on branch ${env.BRANCH_NAME}")
                 sh '''
                    $SBT assembly
                 '''
@@ -70,11 +70,11 @@ pipeline {
            }
            unstable {
                colourText("warn", "Something went wrong, build finished with result ${currentResult}. This may be caused by failed tests, code violation or in some cases unexpected interrupt.")
-               // sendNotifications currentResult, "\$SBR_EMAIL_LIST", "${env.NODE_STAGE}"
+               // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${env.NODE_STAGE}"
            }
            failure {
                colourText("warn","Process failed at: ${env.NODE_STAGE}")
-               // sendNotifications currentResult, "\$SBR_EMAIL_LIST", "${env.NODE_STAGE}"
+               // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${env.NODE_STAGE}"
            }
     }
 }
