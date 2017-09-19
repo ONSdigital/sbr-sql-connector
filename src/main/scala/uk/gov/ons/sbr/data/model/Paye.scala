@@ -1,3 +1,11 @@
+/**
+ * Paye.scala
+ * --------------
+ * Author: websc
+ * Date: 14/09/17 13:24
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.model
 
 

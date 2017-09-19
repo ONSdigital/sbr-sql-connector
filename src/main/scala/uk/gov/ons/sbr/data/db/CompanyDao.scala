@@ -1,4 +1,13 @@
+/**
+ * CompanyDao.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 14:10
+ * Copyright (c) 2017  Office for National Statistics
+ **/
+
 package uk.gov.ons.sbr.data.db
+
 
 import uk.gov.ons.sbr.data.model.Company
 

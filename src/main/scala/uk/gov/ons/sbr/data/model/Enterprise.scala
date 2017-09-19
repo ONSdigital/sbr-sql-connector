@@ -1,7 +1,14 @@
+/**
+ * Enterprise.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 14:01
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.model
 
 import scalikejdbc._
-import uk.gov.ons.sbr.data.db.LegalUnitDao
 
 // Use JSOn to convert class -> JSON -> Map easily
 import play.api.libs.json._

@@ -1,3 +1,11 @@
+/**
+ * SbrDbService.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 13:51
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.service
 
 import com.typesafe.config._
@@ -10,21 +18,22 @@ import uk.gov.ons.sbr.data.model.{StatUnit, StatUnitLinks, UnitLinks}
 class SbrDbService(dbConfigOpt: Option[Config]) {
 
   // Set up DB...
-  // Did we recevie a config?
-  val dbConfig = dbConfigOpt match {
+  // Did we receive a config?  If not, use "default".
+  private val dbConfig = dbConfigOpt match {
     case Some(cfg: Config) => cfg
     case None =>   ConfigFactory.load().getConfig("db").getConfig("default")
   }
   val db = new SbrDatabase(dbConfig)
-  val initSchema: Boolean = dbConfig.getBoolean("init")
-  val loadSample: Boolean = dbConfig.getBoolean("load")
-
-  val sampleDir = dbConfig.getString("sample")
-
-  val dbSchema = DbSchema
 
   // Get implicit session for voodoo with DB operations below
   implicit val session = db.session
+
+  // Initialise DB as required
+  private val initSchema: Boolean = dbConfig.getBoolean("init")
+  private val loadSample: Boolean = dbConfig.getBoolean("load")
+  private val sampleDir = dbConfig.getString("sample")
+
+  val dbSchema = DbSchema
 
   // create tables?
   if (initSchema) dbSchema.createSchema
@@ -42,7 +51,7 @@ class SbrDbService(dbConfigOpt: Option[Config]) {
   // Service methods
 
   // Ony use this hard-coded value for demo!!!
-  def defaultRefPeriod: Long = 201706
+  def defaultRefPeriod: Long = this.dbConfig.getLong("refperiod")
 
   // StatUnitLinks only contain IDs - this is where you search for an ID but do not yet know the unit type
   def getStatUnitLinks(ref_period: Long, unitId: String): Seq[StatUnitLinks] = {

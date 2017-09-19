@@ -1,3 +1,11 @@
+/**
+ * LeuChildren.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 14:01
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.model
 
 import play.api.libs.json.Json

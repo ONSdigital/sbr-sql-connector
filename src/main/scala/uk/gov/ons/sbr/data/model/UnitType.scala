@@ -1,6 +1,12 @@
-package uk.gov.ons.sbr.data.model
+/**
+ * UnitType.scala
+ * --------------
+ * Author: websc
+ * Date: 18/09/17 15:21
+ * Copyright (c) 2017  Office for National Statistics
+ */
 
-import play.api.libs.json.Json
+package uk.gov.ons.sbr.data.model
 
 object UnitType extends Enumeration  {
   /*

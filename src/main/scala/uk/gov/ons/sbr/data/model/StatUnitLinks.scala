@@ -1,3 +1,11 @@
+/**
+ * StatUnitLinks.scala
+ * --------------
+ * Author: websc
+ * Date: 18/09/17 16:35
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.model
 
 import play.api.libs.json._

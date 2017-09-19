@@ -54,13 +54,14 @@ pipeline {
                         },
                         "Style" : {
                             colourText("info","Running style tests")
-                            // sh '''
-                            // $SBT scalastyleGenerateConfig
-                            // $SBT scalastyle
-                            // '''
+                             sh '''
+                             $SBT scalastyleGenerateConfig
+                             $SBT scalastyle
+                             '''
                         },
                         "Additional" : {
                             colourText("info","Running additional tests")
+                            // Not using this as too much noise created where it does not understand ScalikeJDBC stuff.
                             // sh "$SBT scapegoat"
                         }
                 )

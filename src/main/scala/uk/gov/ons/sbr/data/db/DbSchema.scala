@@ -1,11 +1,15 @@
+/**
+ * DbSchema.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 13:46
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.db
 
 import scalikejdbc._
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
-
-import javax.inject.Singleton
-
-import com.typesafe.config.{Config}
 
 object DbSchema {
 
@@ -16,7 +20,7 @@ object DbSchema {
   private val legalUnitTable =  LegalUnitDbTable
   private val enterpriseTable =  EnterpriseDbTable
 
-  def dropSchema(implicit session: DBSession = autoSession) = {
+  def dropSchema(implicit session: DBSession = autoSession): Boolean = {
 
     unitLinksTable.dropTable
 
@@ -31,7 +35,7 @@ object DbSchema {
     enterpriseTable.dropTable
   }
 
-  def createSchema(implicit session: DBSession = autoSession) = {
+  def createSchema(implicit session: DBSession = autoSession): Unit = {
 
     dropSchema
 
@@ -50,9 +54,7 @@ object DbSchema {
   }
 
 
-  def loadDataIntoSchema(sampleDir: String) = {
-
-    println(s"*** Loading data from $sampleDir....")
+  def loadDataIntoSchema(sampleDir: String): Unit = {
 
     enterpriseTable.loadFromSqlFile(s"$sampleDir/ent_2500_data.sql")
 

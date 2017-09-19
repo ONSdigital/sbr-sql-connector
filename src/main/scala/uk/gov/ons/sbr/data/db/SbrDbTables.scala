@@ -1,33 +1,39 @@
+/**
+ * SbrDbTables.scala
+ * --------------
+ * Author: websc
+ * Date: 19/09/17 14:01
+ * Copyright (c) 2017  Office for National Statistics
+ */
+
 package uk.gov.ons.sbr.data.db
 
-import javax.inject.Singleton
-
-import com.typesafe.config.{Config, ConfigFactory}
 import scalikejdbc.{DBSession, _}
 import uk.gov.ons.sbr.data.model.Enterprise.autoSession
 
 trait SbrDbTable {
 
-  def createTable(implicit session: DBSession = autoSession)
+  def createTable(implicit session: DBSession = autoSession): Unit
 
-  def loadFromSqlFile(insertsFile: String)(implicit session: DBSession = autoSession) = {
+  def loadFromSqlFile(insertsFile: String)(implicit session: DBSession = autoSession): Unit = {
   //TODO *** no error handling - fix this!!!
     import scala.io.Source
 
     for (line <- Source.fromFile(insertsFile).getLines) {
       val sql = line.trim
-      if (sql != "")
+      if (sql != "") {
         SQL(sql).execute.apply()
+      }
     }
   }
 }
 
 object EnterpriseDbTable extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS ent_2500 CASCADE""".execute.apply()
 
-   def createTable(implicit session: DBSession = autoSession) = sql"""
+   def createTable(implicit session: DBSession = autoSession): Unit = sql"""
     CREATE TABLE ent_2500
     (
         ref_period bigint NOT NULL,
@@ -55,10 +61,10 @@ object EnterpriseDbTable extends SbrDbTable{
 
 object LegalUnitDbTable extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS leu_2500 CASCADE""".execute.apply()
 
-  def createTable(implicit session: DBSession = autoSession) = sql"""
+  def createTable(implicit session: DBSession = autoSession): Unit = sql"""
   CREATE TABLE leu_2500
    (
         ref_period integer NOT NULL,
@@ -85,10 +91,10 @@ object LegalUnitDbTable extends SbrDbTable{
 
 object  CompanyDbTable extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS ch_2500 CASCADE""".execute.apply()
 
-  def createTable(implicit session: DBSession = autoSession) = sql"""
+  def createTable(implicit session: DBSession = autoSession): Unit = sql"""
     CREATE TABLE ch_2500
     (
     ref_period integer NOT NULL,
@@ -159,10 +165,10 @@ object  CompanyDbTable extends SbrDbTable{
 
 object VatDbTable extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS vat_2500 CASCADE""".execute.apply()
 
-  def createTable(implicit session: DBSession = autoSession) = sql"""
+  def createTable(implicit session: DBSession = autoSession): Unit = sql"""
   CREATE TABLE vat_2500
    (
       ref_period integer NOT NULL,
@@ -206,10 +212,10 @@ object VatDbTable extends SbrDbTable{
 
 object PayeDbTable  extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS paye_2500 CASCADE""".execute.apply()
 
-  def createTable(implicit session: DBSession = autoSession) = sql"""
+  def createTable(implicit session: DBSession = autoSession): Unit = sql"""
   CREATE TABLE paye_2500
    (
     ref_period integer NOT NULL,
@@ -263,10 +269,10 @@ object PayeDbTable  extends SbrDbTable{
 
 object UnitLinksDbTable  extends SbrDbTable{
 
-  def dropTable(implicit session: DBSession = autoSession) =
+  def dropTable(implicit session: DBSession = autoSession): Boolean =
     sql"""DROP TABLE IF EXISTS unit_links_2500 CASCADE""".execute.apply()
 
-  def createTable(implicit session: DBSession = autoSession) = sql"""
+  def createTable(implicit session: DBSession = autoSession):Unit = sql"""
   CREATE TABLE unit_links_2500
    (
        ref_period bigint NOT NULL,
