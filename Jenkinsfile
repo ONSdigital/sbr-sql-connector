@@ -36,9 +36,7 @@ pipeline {
             steps {
                 colourText("info", "Unit test for ${env.BUILD_ID} on ${env.JENKINS_URL} on branch ${env.BRANCH_NAME}")
 
-                sh '''
-                   $SBT test
-                   '''
+                sh "$SBT test"
             }
         }
         stage('Integration Test') {
