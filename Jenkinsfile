@@ -22,7 +22,7 @@ pipeline {
                 deleteDir()
                 checkout scm
                 stash name: 'app'
-                sh "$SBT version"
+                //sh "$SBT version"
                 script {
                     version = '1.0.' + env.BUILD_NUMBER
                     currentBuild.displayName = version
@@ -39,7 +39,7 @@ pipeline {
                     env.NODE_STAGE = "Build"
                 }
                 sh '''
-                $SBT clean compile test
+                $SBT clean compile
                 '''
             }
         }
@@ -50,7 +50,7 @@ pipeline {
                 parallel (
                         "Unit" :  {
                             colourText("info","Running unit tests")
-                            // sh "$SBT test"
+                            sh "$SBT test"
                         },
                         "Style" : {
                             colourText("info","Running style tests")
