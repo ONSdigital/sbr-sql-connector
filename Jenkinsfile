@@ -4,17 +4,8 @@
 pipeline {
     environment {
         RELEASE_TYPE = "PATCH"
-
-        BRANCH_DEV = "development"
-        BRANCH_TEST = "release"
-        BRANCH_PROD = "master"
-
-        DEPLOY_DEV = "dev"
-        DEPLOY_TEST = "test"
-        DEPLOY_PROD = "prod"
-
+        
         GIT_TYPE = "Github"
-        GIT_CREDS = "github-sbr-user"
     }
     options {
         skipDefaultCheckout()
