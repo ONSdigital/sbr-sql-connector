@@ -6,6 +6,7 @@ pipeline {
         RELEASE_TYPE = "PATCH"
         
         GIT_TYPE = "Github"
+        GIT_CREDS = "github-sbr-user"
     }
     options {
         skipDefaultCheckout()
