@@ -49,8 +49,8 @@ pipeline {
             steps {
                colourText("info", "Build assembly for ${env.BUILD_ID} on ${env.JENKINS_URL} on branch ${env.BRANCH_NAME}")
                 sh '''
-                   $SBT assembly
-                '''
+                                $SBT clean compile "project api" universal:packageBin coverage test coverageReport
+                                '''
             }
         }
 
