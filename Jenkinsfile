@@ -47,7 +47,8 @@ pipeline {
         stage('Static Analysis') {
             agent any
             steps {
-                parallel (
+                // Do not run unit tests in parallel as they build DB objects in memory which can cause conflicts.
+                //  parallel (
                         "Unit" :  {
                             colourText("info","Running unit tests")
                             sh "$SBT test"
@@ -63,7 +64,7 @@ pipeline {
                             colourText("info","Running additional tests")
                             // sh "$SBT scapegoat"
                         }
-                )
+                //)
             }
             post {
                 always {
