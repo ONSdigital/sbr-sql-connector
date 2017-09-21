@@ -51,7 +51,7 @@ class SbrDbService(dbConfigOpt: Option[Config]) {
   // Service methods
 
   // Ony use this hard-coded value for demo!!!
-  def defaultRefPeriod: Long = this.dbConfig.getLong("refperiod")
+  val defaultRefPeriod: Long = this.dbConfig.getLong("refperiod")
 
   // StatUnitLinks only contain IDs - this is where you search for an ID but do not yet know the unit type
   def getStatUnitLinks(ref_period: Long, unitId: String): Seq[StatUnitLinks] = {
