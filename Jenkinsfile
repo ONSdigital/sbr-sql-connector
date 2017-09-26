@@ -131,8 +131,8 @@ pipeline {
              steps {
                  colourText("success", 'Integration Tests - For Release or Dev environment.')
                  script {
-                     env.NODE_STAGE = "Integration Tests"
-                     sh '$SBT it:test'
+                     env.NODE_STAGE = "Integration Tests - DISABLED FOR NOW"
+                     // sh '$SBT it:test'
                  }
              }
          }
