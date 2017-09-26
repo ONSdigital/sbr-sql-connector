@@ -300,12 +300,12 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     val searchUnitType = "LEU"
 
     // Query the records back
-    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinksByKey(refperiod, searchId, searchUnitType)
+    val results: Option[StatUnitLinks] = dbService.getStatUnitLinksByKey(refperiod, searchId, searchUnitType)
 
-    val expected: Seq[StatUnitLinks] = Seq(UnitLinks(refperiod, searchUnitType, searchId)).map(StatUnitLinks(_))
+    val expected: Option[StatUnitLinks] = Option(UnitLinks(refperiod, searchUnitType, searchId)).map(StatUnitLinks(_))
 
     // Check the results are correct
-    results should contain theSameElementsAs expected
+    results shouldBe expected
 
   }
 
