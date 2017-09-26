@@ -306,7 +306,6 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
 
     // Check the results are correct
     results shouldBe expected
-
   }
 
   it should "insert Unit Links with default Ref Period and return dataas StatUnitLinks  for ID" in {
