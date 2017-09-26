@@ -273,6 +273,42 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
 
   }
 
+  it should "insert a Unit Links and return data as StatUnitLinks for full key i.e. Ref Period + ID + Unit Type" in {
+
+    val refperiod = 201708 // not default period
+
+    // create several records for each Unit type
+    val uts = List("ENT","LEU","CH","PAYE","VAT")
+
+    val numUnits = 10
+    val ids = (1 to numUnits)
+    val dummy = for {
+      id <- ids
+      ut <- uts
+      key = s"$id"
+      rec = UnitLinks(refperiod, ut, key, None, None, None)
+    } yield linksDao.insert(rec)
+
+    // Pick an ID at random
+    val r = scala.util.Random
+    val searchId : String = r.nextInt(numUnits) match {
+      case 0 => s"1"
+      case n => s"$n"
+    }
+
+    // Use LEU as Unit Type
+    val searchUnitType = "LEU"
+
+    // Query the records back
+    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinksByKey(refperiod, searchId, searchUnitType)
+
+    val expected: Seq[StatUnitLinks] = Seq(UnitLinks(refperiod, searchUnitType, searchId)).map(StatUnitLinks(_))
+
+    // Check the results are correct
+    results should contain theSameElementsAs expected
+
+  }
+
   it should "insert Unit Links with default Ref Period and return dataas StatUnitLinks  for ID" in {
 
     val refperiod = dbService.defaultRefPeriod
