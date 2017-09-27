@@ -11,19 +11,19 @@ package uk.gov.ons.sbr.data.model
 import play.api.libs.json.Json
 
 // Every field is an Option so we can leave them out of the JSON/Maps
-case class Children(leu: Option[Seq[String]] = None,
+case class Children(legalunit: Option[Seq[String]] = None,
                     ch: Option[String] = None,
                     paye: Option[Seq[String]] = None,
-                    vat: Option[Seq[String]] = None)
+                    vats: Option[Seq[String]] = None)
 {
 
-  def asMap[T](): Map[String, String] = {
+  def asMap(): Map[String, String] = {
     // WARNING: This mapping (ID->Unit Type) is required for compatibility with mid-tier API,
     // but it is NOT reliable because we could have conflicting IDs of different types.
 
     val ch: Option[(String, String)] = this.ch.map(ref => (ref ->UnitType.CH.toString))
 
-    val leus: Seq[(String, String)] = this.leu match{
+    val leus: Seq[(String, String)] = this.legalunit match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.LEU.toString)}
       case _ => Nil}
 
@@ -32,7 +32,7 @@ case class Children(leu: Option[Seq[String]] = None,
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
       case _ => Nil}
 
-    val vats: Seq[(String, String)] = this.vat match{
+    val vats: Seq[(String, String)] = this.vats match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.VAT.toString)}
       case _ => Nil}
 
