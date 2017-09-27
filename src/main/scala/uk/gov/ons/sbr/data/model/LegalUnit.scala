@@ -175,7 +175,7 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
       case  xs: Seq[String] => Some(xs)}
 
     // Get VATs if any
-    val vats: Option[Seq[String]] = VatDao.getVatsForLegalUnit(ref_period, ubrn).map(_.vatref)
+    val vats: Option[Seq[String]] = VatDao.getVatsForLegalUnit(ref_period, ubrn).map(_.vatref.toString)
       match {case Nil => None
       case  xs: Seq[String] => Some(xs)}
     // Children object can have LEUs, but we do not need them here.
