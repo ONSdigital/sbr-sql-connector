@@ -17,7 +17,7 @@ case class Children(legalunit: Option[Seq[String]] = None,
                     vats: Option[Seq[String]] = None)
 {
 
-  def asMap(): Map[String, String] = {
+  def asMap[T](): Map[String, String] = {
     // WARNING: This mapping (ID->Unit Type) is required for compatibility with mid-tier API,
     // but it is NOT reliable because we could have conflicting IDs of different types.
 
@@ -26,7 +26,6 @@ case class Children(legalunit: Option[Seq[String]] = None,
     val leus: Seq[(String, String)] = this.legalunit match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.LEU.toString)}
       case _ => Nil}
-
 
     val payes: Seq[(String, String)] = this.paye match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
