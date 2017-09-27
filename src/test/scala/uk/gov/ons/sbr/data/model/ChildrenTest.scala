@@ -26,7 +26,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Construct Children
     val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 
-    val expected = Json.parse("""{"leu":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -35,7 +35,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Make the Children object
     val expected = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
 
-    val jsonStr = Json.parse("""{"leu":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val jsonStr = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
 
     val result: Children = jsonStr.as[Children]
 
@@ -48,7 +48,7 @@ class ChildrenTest extends FlatSpec with Matchers{
    // Construct Children
     val expected = Children(Option(List(ubrn.toString)), None, None, None)
 
-    val jsonStr = Json.parse("""{"leu":["1234"]}""")
+    val jsonStr = Json.parse("""{"legalunit":["1234"]}""")
 
     val result: Children = jsonStr.as[Children]
 
@@ -61,7 +61,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Construct Children
     val kidz = Children(None, Some(coNo), Some(payes), Some(vats))
 
-    val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -71,7 +71,7 @@ class ChildrenTest extends FlatSpec with Matchers{
      // Construct Children
     val kidz = Children(None, None, Some(payes), Some(vats))
 
-    val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -81,7 +81,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Construct Children
     val kidz = Children(None, None, None, Some(vats))
 
-    val expected = Json.parse("""{"vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"vats":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -111,7 +111,7 @@ class ChildrenTest extends FlatSpec with Matchers{
     // Construct Children
     val kidz = Children(None, Some(coNo), None, Some(vats))
 
-    val expected = Json.parse("""{"ch":"COMPANY0001","vat":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"ch":"COMPANY0001","vats":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -152,4 +152,33 @@ class ChildrenTest extends FlatSpec with Matchers{
     kidz.asMap() should contain theSameElementsAs (expected)
   }
 
+  it should "convert children between JSON and Map correctly" in {
+
+    val childJsonStr = """{"legalunit":["1"],"ch":"2","paye":["3"], "vats":["4"]}"""
+
+    val children: Children = Json.parse(childJsonStr).as[Children]
+
+    val ch: Option[(String, String)] = children.ch.map(ref => (ref -> UnitType.CH.toString))
+
+    val leus: Seq[(String, String)] = children.legalunit match{
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.LEU.toString)}
+      case _ => Nil}
+
+    val vats: Seq[(String, String)] = children.vats match{
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.VAT.toString)}
+      case _ => Nil}
+
+    val payes: Seq[(String, String)] = children.paye match{
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
+      case _ => Nil}
+
+    val data: Map[String, String] = (leus ++ payes ++  vats).toMap[String, String]
+
+    val expected =  Map("1" -> "LEU", "2" -> "CH", "3" -> "PAYE", "4" -> "VAT")
+
+    val actual =  children.asMap()
+
+    actual should contain theSameElementsAs  expected
+
+  }
 }

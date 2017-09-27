@@ -35,7 +35,7 @@ class StatUnitLinksTest extends FlatSpec with Matchers{
     val entref = 1000L
     val ubrn = 2000L
     val cono = "COMPANY123"
-    val children = """{"paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}"""
+    val children = """{"paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}"""
     val ul = UnitLinks(refperiod, ut, s"$cono", Option(entref), Option(ubrn), Option(children) )
 
     // expected children - (unit ID -> unit Type) to allow for multiple PAYEs etc.

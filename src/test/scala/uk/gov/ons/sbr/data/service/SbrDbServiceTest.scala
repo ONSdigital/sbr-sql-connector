@@ -253,7 +253,7 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
       id <- ids
       ut <- uts
       key = s"$id"
-      rec = UnitLinks(refperiod, ut, key, None, None, None)
+      rec = UnitLinks(ref_period = refperiod, unitType = ut, unitId = key, pEnt = None, pLeu = None, children = None)
     } yield linksDao.insert(rec)
 
     // Pick an ID at random
@@ -373,4 +373,39 @@ class SbrDbServiceTest extends FlatSpec with DaoTest with Matchers {
     results shouldBe expected
 
   }
+
+  it should "insert Unit Links with same ID for full hierarchy ENT/LEU/CH/PAYE/VAT and return correctly as list of StatUnitLinks" in {
+    // We want all units to ahve same ID but different type
+
+    val unit_id = "12345678"
+
+    val ent = UnitLinks(ref_period = 201706, unitType = "ENT", unitId = unit_id, pEnt = None, pLeu=None,
+      children = Some(s"""[{"legalunit":"$unit_id"}]"""))
+    linksDao.insert(ent)
+
+    val leu = UnitLinks(ref_period = 201706, unitType = "LEU", unitId = unit_id, pEnt = Some(100L), pLeu=None,
+      children = Some(s"""[{"ch":"$unit_id","paye":["$unit_id"], "vats":["$unit_id"]}]"""))
+    linksDao.insert(leu)
+
+    val ch = UnitLinks(ref_period = 201706, unitType = "CH", unitId = unit_id, pEnt = Some(100L), pLeu=Some(1001L),
+      children = None)
+    linksDao.insert(ch)
+
+    val vat = UnitLinks(ref_period = 201706, unitType = "VAT", unitId = unit_id,  pEnt = Some(100L), pLeu=Some(1001L),
+      children = None)
+    linksDao.insert(vat)
+
+    val paye = UnitLinks(ref_period = 201706, unitType = "PAYE", unitId = unit_id, pEnt = Some(100L), pLeu=Some(1001L),
+      children = None)
+    linksDao.insert(paye)
+
+    val results: Seq[StatUnitLinks] = dbService.getStatUnitLinks(ref_period = 201706, unitId = leu.unitId)
+
+    val expected = Seq(StatUnitLinks(ent), StatUnitLinks(leu),StatUnitLinks(ch),StatUnitLinks(vat),StatUnitLinks(paye))
+
+    results should contain theSameElementsAs  expected
+
+  }
+
+
 }
