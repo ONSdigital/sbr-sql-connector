@@ -179,7 +179,7 @@ object LegalUnit extends SQLSyntaxSupport[LegalUnit] {
       match {case Nil => None
       case  xs: Seq[String] => Some(xs)}
     // Children object can have LEUs, but we do not need them here.
-    Children(ch = ch, paye = payes, vats = vats)
+    Children(ch = ch, paye = payes, vat = vats)
   }
 
   def getAsStatUnit(ref_period: Long, ubrn: Long)(implicit session: DBSession = autoSession): Option[StatUnit] = {
