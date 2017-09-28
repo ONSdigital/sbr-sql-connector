@@ -19,23 +19,23 @@ class ChildrenTest extends FlatSpec with Matchers{
   // need some VATs
   val vref1 = "VAT0001"
   val vref2 = "VAT0002"
-  val vats = List(vref1, vref2)
+  val vat = List(vref1, vref2)
 
   it should "construct JSON correctly when every field is populated" in {
 
     // Construct Children
-    val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
+    val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vat))
 
-    val expected = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
 
   it should "parse JSON correctly to Children object when every field is populated" in {
     // Make the Children object
-    val expected = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
+    val expected = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vat))
 
-    val jsonStr = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
+    val jsonStr = Json.parse("""{"legalunit":["1234"],"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     val result: Children = jsonStr.as[Children]
 
@@ -59,9 +59,9 @@ class ChildrenTest extends FlatSpec with Matchers{
   it should "construct JSON correctly when LEU is NOT populated" in {
 
     // Construct Children
-    val kidz = Children(None, Some(coNo), Some(payes), Some(vats))
+    val kidz = Children(None, Some(coNo), Some(payes), Some(vat))
 
-    val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"ch":"COMPANY0001","paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -69,9 +69,9 @@ class ChildrenTest extends FlatSpec with Matchers{
   it should "construct JSON correctly when LEU and CH is NOT populated" in {
 
      // Construct Children
-    val kidz = Children(None, None, Some(payes), Some(vats))
+    val kidz = Children(None, None, Some(payes), Some(vat))
 
-    val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"],"vats":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"paye":["PAYE0001","PAYE0002"],"vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -79,9 +79,9 @@ class ChildrenTest extends FlatSpec with Matchers{
   it should "construct JSON correctly when LEU and CH, PAYE are NOT populated" in {
 
     // Construct Children
-    val kidz = Children(None, None, None, Some(vats))
+    val kidz = Children(None, None, None, Some(vat))
 
-    val expected = Json.parse("""{"vats":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -109,9 +109,9 @@ class ChildrenTest extends FlatSpec with Matchers{
   it should "construct JSON correctly when LEU and PAYE is NOT populated" in {
 
     // Construct Children
-    val kidz = Children(None, Some(coNo), None, Some(vats))
+    val kidz = Children(None, Some(coNo), None, Some(vat))
 
-    val expected = Json.parse("""{"ch":"COMPANY0001","vats":["VAT0001","VAT0002"]}""")
+    val expected = Json.parse("""{"ch":"COMPANY0001","vat":["VAT0001","VAT0002"]}""")
 
     Json.toJson(kidz) shouldBe expected
   }
@@ -138,7 +138,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "convert full set of data to Map correctly via asMap()" in {
      // Make the Children object
-    val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vats))
+    val kidz = Children(Option(List(ubrn.toString)), Some(coNo), Some(payes), Some(vat))
 
     val expected: Map[String, String] =  Map(
       "1234" -> "LEU",
@@ -154,7 +154,7 @@ class ChildrenTest extends FlatSpec with Matchers{
 
   it should "convert children between JSON and Map correctly" in {
 
-    val childJsonStr = """{"legalunit":["1"],"ch":"2","paye":["3"], "vats":["4"]}"""
+    val childJsonStr = """{"legalunit":["1"],"ch":"2","paye":["3"], "vat":["4"]}"""
 
     val children: Children = Json.parse(childJsonStr).as[Children]
 
@@ -164,7 +164,7 @@ class ChildrenTest extends FlatSpec with Matchers{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.LEU.toString)}
       case _ => Nil}
 
-    val vats: Seq[(String, String)] = children.vats match{
+    val vat: Seq[(String, String)] = children.vat match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.VAT.toString)}
       case _ => Nil}
 
@@ -172,7 +172,7 @@ class ChildrenTest extends FlatSpec with Matchers{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
       case _ => Nil}
 
-    val data: Map[String, String] = (leus ++ payes ++  vats).toMap[String, String]
+    val data: Map[String, String] = (leus ++ payes ++  vat).toMap[String, String]
 
     val expected =  Map("1" -> "LEU", "2" -> "CH", "3" -> "PAYE", "4" -> "VAT")
 

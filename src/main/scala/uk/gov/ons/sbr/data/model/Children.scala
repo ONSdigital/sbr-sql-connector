@@ -14,7 +14,7 @@ import play.api.libs.json.Json
 case class Children(legalunit: Option[Seq[String]] = None,
                     ch: Option[String] = None,
                     paye: Option[Seq[String]] = None,
-                    vats: Option[Seq[String]] = None)
+                    vat: Option[Seq[String]] = None)
 {
 
   def asMap(): Map[String, String] = {
@@ -32,7 +32,7 @@ case class Children(legalunit: Option[Seq[String]] = None,
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
       case _ => Nil}
 
-    val vats: Seq[(String, String)] = this.vats match{
+    val vats: Seq[(String, String)] = this.vat match{
       case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.VAT.toString)}
       case _ => Nil}
 
