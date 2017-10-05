@@ -17,7 +17,7 @@
 `sbt test`
 
 * There are tests for all the main database functions.  
-* These are configured to use an H2 in-memory database.
+* These are configured to use an [H2 in-memory database](http://www.h2database.com/).
 * Each test will create/update records in the test database as necessary. 
 
 ## Configuration ##
@@ -27,14 +27,14 @@
 * See [application.conf](./src/main/resources/application.conf).
 * Default configuration is used for the dummy application (see above) e.g. it calls for the sample data to be loaded into the database.
 * Test configuration does not load sample data.
-* Both configurations are set to create the target tables, as we assume we are running in a fresh database e.g. H2.
-* There is a sample configuration for using a local PostgreSQL RDBMS, which has been tested with the dummy applicaiotn and the test suites.
+* Both configurations are set to create the target tables, as we assume we are running in a fresh database e.g. [H2](http://www.h2database.com/).
+* There is a sample configuration for using a local PostgreSQL RDBMS, which has been tested with the dummy application and the test suites.
 * The SQL Server configuration should be similar.
 
 ### Using the database configuration ###
 
 * The main DB service is provided via the [SbrDbService](./src/main/scala/uk/gov/ons/sbr/data/service/SbrDbService.scala) class.
-* This expects to receive a TypeSafe Config object containing the configuration for the required database i.e. either `default` or `test` from our `application.conf` file.
+* This expects to receive a [TypeSafe Config](https://github.com/typesafehub/config) object containing the configuration for the required database i.e. either `default` or `test` from our `application.conf` file.
 * If the service is being called from another module, then this configuration should be provided.
 * If no database configuration is provided, the application will use the one from the `application.conf` file.
 
@@ -59,7 +59,6 @@
 * This breaks foreign key relationships in the SQL data model, so we had to pre-process the data to remove incomplete records etc.
 * Once a "clean" set of data had been created, we generated the SQL INSERT statements to create these records in the target tables.
 * These SQL scripts are held in a separate repository (in the ONS GitLab).
-* However, the sample SQL scripts have had the name and address fields obfuscated in the HMRC data (PAYE/VAT), so the only direct reference to a Legal Unit's name comes from the Companies House data, which is public.
 
 ### Queries and data formats ###
 
@@ -77,14 +76,14 @@
 
 * These two classes are how data is provided to an external application from the SQL Connector, in order to match the basic data structures returned from the HBase Connector.
 * [StatUnitLinks](./src/main/scala/uk/gov/ons/sbr/data/model/StatUnitLinks.scala) contain just the parent/child links and IDs for an object.
-* The corresponding table is queried when the user wants to search for an object by ID.
+* The corresponding table `unit_links_2500` is queried when the user wants to search for an object by ID.
 * [StatUnit](src/main/scala/uk/gov/ons/sbr/data/model/StatUnit.scala) contains the data for the given object (as key-value pairs), plus a nested hierarchy of all the object's children as StatUnit objects.
-* StatUnits are not stored as such in the databse, but are constructed at runtime by the query which reads the relevant records for the Enterprise, Legal Unit etc.
+* StatUnits are not stored as such in the database, but are constructed at runtime by the query which reads the relevant records for the Enterprise, Legal Unit etc.
 
 ### Updates ###
 
 * We did not have time to integrate the "edit Enterprise" functionality with this module.
-* However, the existing DAO objects and service methods will allow existing fields on an Enterprise StatUnit obejct to be updated via the key-value Map.
+* However, the current DAO objects and service methods will allow existing fields on an Enterprise StatUnit object to be updated via the key-value Map.
 * See the test case "insert new Enterprise and update it correctly via StatUnit" in the [SbrDbServiceTest](src/test/scala/uk/gov/ons/sbr/data/service/SbrDbServiceTest.scala) suite for an example of how this works.
 * The SQL table structure is pre-defined, so we cannot currently add new fields to an object (unlike HBase where the stored data structure is arbitrary), because we would need the corresponding column to exist in the table.
 
@@ -94,12 +93,14 @@
 * However, many RDBMS platforms now allow you to store collections (maps, arrays, sets) within a table record.
 * This might provide a way to store a changing set of attributes
  without having to change the data model.
+* A more flexible and scalable alternative would be to use [MongoDB](https://www.mongodb.com/), which would allow us to represent the internal structure of these hierarchical obects explicitly, but still allow us to add extra fields at runtime as necessary.
  
 ### SQL database choice ###
 
-* We used H2 in-memory database as our primary DB here because it was readily available and avoided dependencies on any additional infrastructure.
+* We used [H2 in-memory database](http://www.h2database.com/) as our primary DB here because it was readily available and avoided dependencies on any additional infrastructure.
 * We also tested the SQL Connector with PostgreSQL to ensrue that ti was compatible with other SQL databases.
 * We did not test it with the proposed SQL Server database, as this would have introduced extra infrastructure dependencies and prevented us working off-network.
+* As indicated above, there are reasons to favour [MongoDB](https://www.mongodb.com/) as a more suitable database platform for the SBR application.
 
 
 ## SQL access library: ScalikeJDBC ##
