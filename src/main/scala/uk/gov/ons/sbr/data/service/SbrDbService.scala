@@ -62,6 +62,15 @@ class SbrDbService(dbConfigOpt: Option[Config]) {
     getStatUnitLinks(ref_period = defaultRefPeriod, unitId)
   }
 
+  // API wants us to be able to query by full key
+  def getStatUnitLinksByKey(ref_period: Long, unitId: String, unitType: String): Option[StatUnitLinks] = {
+    linksDao.findByKey(ref_period = ref_period, unitId = unitId, unitType = unitType).map(StatUnitLinks(_))
+  }
+
+  def getStatUnitLinksByKey(unitId: String, unitType: String): Option[StatUnitLinks] = {
+    getStatUnitLinksByKey(ref_period = defaultRefPeriod, unitId = unitId, unitType = unitType)
+  }
+
   // The StatUnit methods are for fetching specific objects (Ent, LEU, CH, PAYE, VAT) as SU hieraarchies
   def getEnterpriseAsStatUnit(ref_period: Long, entref: Long): Option[StatUnit] = {
     // construct hierarchy of StatUnits for this Enterprise

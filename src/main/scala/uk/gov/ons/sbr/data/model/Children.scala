@@ -17,23 +17,23 @@ case class Children(leu: Option[Seq[String]] = None,
                     vat: Option[Seq[String]] = None)
 {
 
-  def asMap(): Map[String, String] = {
+  def asMap[T](): Map[String, String] = {
     // WARNING: This mapping (ID->Unit Type) is required for compatibility with mid-tier API,
     // but it is NOT reliable because we could have conflicting IDs of different types.
 
     val ch: Option[(String, String)] = this.ch.map(ref => (ref ->UnitType.CH.toString))
 
     val leus: Seq[(String, String)] = this.leu match{
-      case Some(xs: Seq[String]) => xs.map{ x => (x -> UnitType.LEU.toString)}
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.LEU.toString)}
       case _ => Nil}
 
 
     val payes: Seq[(String, String)] = this.paye match{
-      case Some(xs: Seq[String]) => xs.map{ x => (x -> UnitType.PAYE.toString)}
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.PAYE.toString)}
       case _ => Nil}
 
     val vats: Seq[(String, String)] = this.vat match{
-      case Some(xs: Seq[String]) => xs.map{ x => (x -> UnitType.VAT.toString)}
+      case Some(xs: Seq[String]) => xs.map{ x => (x.toString -> UnitType.VAT.toString)}
       case _ => Nil}
 
     val data: Map[String, String] = (leus ++ payes ++ vats).toMap[String, String]
